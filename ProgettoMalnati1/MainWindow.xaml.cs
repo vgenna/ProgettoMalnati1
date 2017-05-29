@@ -28,6 +28,19 @@ namespace ProgettoMalnati1
         private void button_Click(object sender, RoutedEventArgs e)
         {
            
+            if (clientButton.IsChecked == true)
+            {
+                Client c = new Client();
+                c.startBroadcast();
+            }
+            else
+            {
+                if (serverButton.IsChecked == true)
+                {
+                    Server s = new Server();
+                    s.startBroadcast();
+                }
+            }
         }
     }
 }
