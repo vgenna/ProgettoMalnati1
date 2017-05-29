@@ -20,7 +20,9 @@ namespace ProgettoMalnati1
 
         public void startBroadcast()
         {
-           UdpClient newClient = new UdpClient();
+            UdpClient newClient = new UdpClient();
+
+
         }
     }
 }
