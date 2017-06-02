@@ -50,12 +50,100 @@ namespace ProgettoMalnati1
                     MessageBox.Show(e.Message + "Timeout expired!");
                     break;
                 }
-                catch(Exception e)
+                catch (Exception e)
                 {
-                    MessageBox.Show("Exception: "+e.Message);
+                    MessageBox.Show("Exception: " + e.Message);
                     break;
                 }
             }
         }
+
+        public void sendFileTCP(string IP_addr, Int32 port_number, string nome_file)
+        {
+            /**************
+            cancellare la classe progressbar già implementata in windows
+            **********/
+            TcpClient client = null;
+            NetworkStream netstream = null;
+            try
+            {
+                client = new TcpClient(IP_addr, port_number);
+                netstream = client.GetStream();
+                int BufferSize = 1024;/**dimensione del pacchetto inviato**/
+
+                FileStream Fs = new FileStream(nome_file, FileMode.Open, FileAccess.Read);/**apro il file in lettura**/
+                int packets_number = Convert.ToInt32
+         (Math.Ceiling(Convert.ToDouble(Fs.Length) / Convert.ToDouble(BufferSize)));
+                /**il numero di pacchetti da inviare è pari alla grandezza totale del file diviso la 
+            grandezza del buffer**/
+
+                ProgressBar progress_bar = new ProgressBar();
+                progress_bar.Value = 0;
+                progress_bar.Minimum = 0;
+                progress_bar.Maximum = packets_number;
+                //progress_bar.
+
+                int lunghezza_file = (int)Fs.Length, dim_pacchetto_corrente, cont = 0;
+
+                for (int i = 0; i < packets_number; i++)
+                {
+                    if (lunghezza_file > BufferSize)
+                    {
+                        dim_pacchetto_corrente = BufferSize;
+                        lunghezza_file = lunghezza_file - dim_pacchetto_corrente;
+                    }
+                    else
+                        dim_pacchetto_corrente = lunghezza_file;
+                    byte[] SendingBuffer = new byte[dim_pacchetto_corrente];
+                    Fs.Read(SendingBuffer, 0, dim_pacchetto_corrente);
+                    netstream.Write(SendingBuffer, 0, (int)SendingBuffer.Length);
+                    if (progress_bar.Value >= progress_bar.Maximum)
+                        progress_bar.Value = progress_bar.Minimum;
+                    //!!!!!!!!!!!!!!!!!!!!!completare PROGRESSBAR
+                    ///////////////progress_bar.PerformStep();
+
+                }
+
+
+            }
+            catch (Exception e)
+
+            {
+                Console.WriteLine(e.Message);
+            }
+            finally
+            {
+                netstream.Close();
+                client.Close();
+            }
+        }
+
+
+        public void sendString(string IP_addr, Int32 port_number, string s)
+        {
+
+            TcpClient client = null;
+            NetworkStream netstream = null;
+            try
+            {
+                client = new TcpClient(IP_addr, port_number);
+                netstream = client.GetStream();
+                byte[] bytes = Encoding.ASCII.GetBytes(s);
+                netstream.Write(bytes, 0, (int)bytes.Length);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
+            finally
+            {
+                netstream.Close();
+                client.Close();
+            }
+
+
+        }
+
     }
 }
+

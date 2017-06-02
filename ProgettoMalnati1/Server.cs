@@ -16,7 +16,7 @@ namespace ProgettoMalnati1
     {
         public Server()
         {
-            
+
         }
 
         public void startBroadcast()
@@ -38,13 +38,13 @@ namespace ProgettoMalnati1
                     newServer.Send(responseData, responseData.Length, remoteClient);
                     newServer.Send(Encoding.ASCII.GetBytes("Other Response Data"), responseData.Length, remoteClient);
                 }
-                catch(Exception e)
+                catch (Exception e)
                 {
-                    MessageBox.Show("Exception: "+e.Message);
+                    MessageBox.Show("Exception: " + e.Message);
                 }
                 finally
                 {
-                   // newServer.Close();
+                    // newServer.Close();
                 }
             }
         }
@@ -66,31 +66,39 @@ namespace ProgettoMalnati1
 
             byte[] RecData = new byte[BufferSize];
 
-            for(; ;)
+            for (;;)
             {
                 TcpClient client = null;
                 NetworkStream netstream = null;
 
                 try
                 {
-                    if(Listener.Pending())
+                    if (Listener.Pending())
                     {
                         client = Listener.AcceptTcpClient();
                         netstream = client.GetStream();
 
                         int r = netstream.Read(RecData, 0, RecData.Length);
                         /**messaggio in RecData**/
-                        string s = string.Format("Stringa ricevuta -> {0}",RecData);
+                        string s2 = Encoding.ASCII.GetString(RecData);
+                        string s = string.Format("Stringa ricevuta -> {0}", s2);
                         MessageBox.Show(s);
                         netstream.Close();
                         client.Close();
                     }
                 }
-                catch(Exception e) { Console.WriteLine(e.Message);  }
+                catch (Exception e) { Console.WriteLine(e.Message); }
 
             }
 
 
         }
+
+
+
     }
+
+
+
 }
+

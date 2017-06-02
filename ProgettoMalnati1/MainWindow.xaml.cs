@@ -31,14 +31,16 @@ namespace ProgettoMalnati1
             if (clientButton.IsChecked == true)
             {
                 Client c = new Client();
-                c.startBroadcast();
+                //c.startBroadcast();
+                c.sendString("127.0.0.1", 1500, "frosinone culone");
             }
             else
             {
                 if (serverButton.IsChecked == true)
                 {
                     Server s = new Server();
-                    s.startBroadcast();
+                    //s.startBroadcast();
+                    s.receiveString(1500);
                 }
             }
         }
