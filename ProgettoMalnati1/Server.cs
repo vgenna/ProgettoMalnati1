@@ -36,5 +36,49 @@ namespace ProgettoMalnati1
                 newServer.Send(responseData, responseData.Length, remoteClient);
             }
         }
+
+        public void receiveString(int portN)
+        {
+
+            TcpListener Listener = null;
+            try
+            {
+                Listener = new TcpListener(IPAddress.Any, portN);
+                Listener.Start();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+            int BufferSize = 1024;
+
+            byte[] RecData = new byte[BufferSize];
+
+            for(; ;)
+            {
+                TcpClient client = null;
+                NetworkStream netstream = null;
+
+                try
+                {
+                    if(Listener.Pending())
+                    {
+                        client = Listener.AcceptTcpClient();
+                        netstream = client.GetStream();
+
+                        int r = netstream.Read(RecData, 0, RecData.Length);
+                        /**messaggio in RecData**/
+                        string s = string.Format("Stringa ricevuta -> {0}",RecData);
+                        MessageBox.Show(s);
+                        netstream.Close();
+                        client.Close();
+                    }
+                }
+                catch(Exception e) { Console.WriteLine(e.Message);  }
+
+            }
+
+
+        }
     }
 }

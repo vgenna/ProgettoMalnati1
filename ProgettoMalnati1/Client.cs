@@ -12,6 +12,7 @@ using System.Threading;
 using System.IO;
 using ProgettoMalnati1;
 using System.Windows.Controls;
+//using System.Windows.Forms;
 
 namespace ProgettoMalnati1
 {
@@ -29,7 +30,7 @@ namespace ProgettoMalnati1
             IPEndPoint remoteServer = new IPEndPoint(IPAddress.Any, 0); //server da cui ricevere le risposte
 
             newClient.EnableBroadcast = true;
-            newClient.Send(requestData, requestData.Length, new IPEndPoint(IPAddress.Broadcast,1500));
+            newClient.Send(requestData, requestData.Length, new IPEndPoint(IPAddress.Broadcast, 1500));
 
 
             byte[] serverResponseBytes = newClient.Receive(ref remoteServer);
@@ -53,10 +54,12 @@ namespace ProgettoMalnati1
             /**************
             cancellare la classe progressbar già implementata in windows
             **********/
+            TcpClient client = null;
+            NetworkStream netstream = null;
             try
             {
-                TcpClient client = new TcpClient(IP_addr, port_number);
-                NetworkStream netstream = client.GetStream();
+                client = new TcpClient(IP_addr, port_number);
+                netstream = client.GetStream();
                 int BufferSize = 1024;/**dimensione del pacchetto inviato**/
 
                 FileStream Fs = new FileStream(nome_file, FileMode.Open, FileAccess.Read);/**apro il file in lettura**/
@@ -66,11 +69,14 @@ namespace ProgettoMalnati1
             grandezza del buffer**/
 
                 ProgressBar progress_bar = new ProgressBar();
-                progress_bar.setMaximum(packets_number);
+                progress_bar.Value = 0;
+                progress_bar.Minimum = 0;
+                progress_bar.Maximum = packets_number;
+                //progress_bar.
 
                 int lunghezza_file = (int)Fs.Length, dim_pacchetto_corrente, cont = 0;
-                
-                for(int i = 0; i < packets_number; i++)
+
+                for (int i = 0; i < packets_number; i++)
                 {
                     if (lunghezza_file > BufferSize)
                     {
@@ -82,26 +88,52 @@ namespace ProgettoMalnati1
                     byte[] SendingBuffer = new byte[dim_pacchetto_corrente];
                     Fs.Read(SendingBuffer, 0, dim_pacchetto_corrente);
                     netstream.Write(SendingBuffer, 0, (int)SendingBuffer.Length);
-                    /*if (progressBar1.Value >= progressBar1.Maximum)
-                        progressBar1.Value = progressBar1.Minimum;
-                    progressBar1.PerformStep();*/
+                    if (progress_bar.Value >= progress_bar.Maximum)
+                        progress_bar.Value = progress_bar.Minimum;
+                    //!!!!!!!!!!!!!!!!!!!!!completare PROGRESSBAR
+                    ///////////////progress_bar.PerformStep();
 
                 }
-                
-                 
+
+
             }
-            catch(Exception e)
+            catch (Exception e)
 
             {
-
-
+                Console.WriteLine(e.Message);
             }
-            finally {   }
+            finally
+            {
+                netstream.Close();
+                client.Close();
+            }
         }
-    
-            MessageBox.Show(formattedString);
 
-            newClient.Close();
+        public void sendString(string IP_addr, Int32 port_number, string s)
+        {
+
+            TcpClient client = null;
+            NetworkStream netstream = null;
+            try
+            {
+                client = new TcpClient(IP_addr, port_number);
+                netstream = client.GetStream();
+                byte[] bytes = Encoding.ASCII.GetBytes("richiesta");
+                netstream.Write(bytes, 0, (int)bytes.Length);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
+            finally
+            {
+                netstream.Close();
+                client.Close();
+            }
+
+
         }
+
     }
 }
+
