@@ -47,7 +47,7 @@ namespace ProgettoMalnati1
                 }
                 catch (SocketException e)
                 {
-                    MessageBox.Show(e.Message + "Timeout expired!");
+                    MessageBox.Show(e.Message + " - Timeout expired!");
                     break;
                 }
                 catch (Exception e)
