@@ -16,7 +16,7 @@ namespace ProgettoMalnati1
     {
         public Server()
         {
-
+            
         }
 
         public void startBroadcast()
@@ -26,14 +26,26 @@ namespace ProgettoMalnati1
 
             while (true)
             {
-                IPEndPoint remoteClient = new IPEndPoint(IPAddress.Any, 0);
-                byte[] clientRequestBytes = newServer.Receive(ref remoteClient);
-                string clientRequest = Encoding.ASCII.GetString(clientRequestBytes);
+                try
+                {
+                    IPEndPoint remoteClient = new IPEndPoint(IPAddress.Any, 0);
+                    byte[] clientRequestBytes = newServer.Receive(ref remoteClient);
+                    string clientRequest = Encoding.ASCII.GetString(clientRequestBytes);
 
-                string formattedString = string.Format("Server: Recieved '{0}' from {1}, sending response", clientRequest, remoteClient.Address.ToString());
+                    string formattedString = string.Format("Server: Received '{0}' from {1}, sending response", clientRequest, remoteClient.Address.ToString());
 
-                MessageBox.Show(formattedString);
-                newServer.Send(responseData, responseData.Length, remoteClient);
+                    MessageBox.Show(formattedString);
+                    newServer.Send(responseData, responseData.Length, remoteClient);
+                    newServer.Send(Encoding.ASCII.GetBytes("Other Response Data"), responseData.Length, remoteClient);
+                }
+                catch(Exception e)
+                {
+                    MessageBox.Show("Exception: "+e.Message);
+                }
+                finally
+                {
+                   // newServer.Close();
+                }
             }
         }
 
