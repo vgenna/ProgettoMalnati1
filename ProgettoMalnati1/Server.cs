@@ -50,6 +50,25 @@ namespace ProgettoMalnati1
             }
         }
 
+        public void startBroadcastSocket()
+        {
+            UdpClient listener = new UdpClient(1500);
+            IPEndPoint groupEP = new IPEndPoint(IPAddress.Any, 1500);
+            string received_data;
+            byte[] receive_byte_array;
+
+            receive_byte_array = listener.Receive(ref groupEP);
+            received_data = Encoding.ASCII.GetString(receive_byte_array, 0, receive_byte_array.Length);
+            string formattedString = String.Format("Server - Received a broadcast from {0} , Received data: {1}", groupEP.ToString(), received_data);
+            MessageBox.Show(formattedString);
+
+            Socket sending_socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram,ProtocolType.Udp);
+            IPAddress send_to_address = groupEP.Address;
+            IPEndPoint sending_end_point = new IPEndPoint(send_to_address, 1501);
+            sending_socket.SendTo(Encoding.ASCII.GetBytes("Response Data"), sending_end_point);
+            MessageBox.Show("Server - Sent!");
+        }
+
         public void receiveString(int portN)
         {
 
