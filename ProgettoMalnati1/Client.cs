@@ -12,57 +12,70 @@ using System.Threading;
 using System.IO;
 using ProgettoMalnati1;
 using System.Windows.Controls;
+/*********/
+
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Text;
+using System.IO;
+using System.Net;
+using System.Net.Sockets;
 
 namespace ProgettoMalnati1
 {
     class Client
     {
+        
         public Client()
         {
-
+          
         }
+           
+        
 
-        public void startBroadcast()
-        {
-            UdpClient newClient = new UdpClient(); //client per inviare il messaggio broadcast
-            byte[] requestData = Encoding.ASCII.GetBytes("Request Data"); //dati da inviare in broadcast
-            IPEndPoint remoteServer = new IPEndPoint(IPAddress.Any, 0); //server da cui ricevere le risposte
-            newClient.Client.ReceiveTimeout = 3000;
+     public void startBroadcast()
+     {
+         UdpClient newClient = new UdpClient(); //client per inviare il messaggio broadcast
+         byte[] requestData = Encoding.ASCII.GetBytes("Request Data"); //dati da inviare in broadcast
+         IPEndPoint remoteServer = new IPEndPoint(IPAddress.Any, 0); //server da cui ricevere le risposte
+         newClient.Client.ReceiveTimeout = 3000;
 
-            newClient.EnableBroadcast = true;
-            newClient.Send(requestData, requestData.Length, new IPEndPoint(IPAddress.Broadcast, 1500));
+         newClient.EnableBroadcast = true;
+         newClient.Send(requestData, requestData.Length, new IPEndPoint(IPAddress.Broadcast, 1500));
 
 
-            while (true)
-            {
-                try
-                {
-                    byte[] serverResponseBytes = newClient.Receive(ref remoteServer);
+         while (true)
+         {
+             try
+             {
+                 byte[] serverResponseBytes = newClient.Receive(ref remoteServer);
 
-                    string serverResponse = Encoding.ASCII.GetString(serverResponseBytes);
+                 string serverResponse = Encoding.ASCII.GetString(serverResponseBytes);
 
-                    string formattedString = string.Format("Client: Received '{0}' from {1}", serverResponse, remoteServer.Address.ToString());
+                 string formattedString = string.Format("Client: Received '{0}' from {1}", serverResponse, remoteServer.Address.ToString());
 
-                    MessageBox.Show(formattedString);
-                }
-                catch (SocketException e)
-                {
-                    MessageBox.Show(e.Message + " - Timeout expired!");
-                    break;
-                }
-                catch (Exception e)
-                {
-                    MessageBox.Show("Exception: " + e.Message);
-                    break;
-                }
-            }
-        }
+                 MessageBox.Show(formattedString);
+             }
+             catch (SocketException e)
+             {
+                 MessageBox.Show(e.Message + " - Timeout expired!");
+                 break;
+             }
+             catch (Exception e)
+             {
+                 MessageBox.Show("Exception: " + e.Message);
+                 break;
+             }
+         }
+     }
 
-        public void sendFileTCP(string IP_addr, Int32 port_number, string nome_file)
-        {
-            /**************
-            cancellare la classe progressbar già implementata in windows
-            **********/
+     public void sendFileTCP(string IP_addr, Int32 port_number, string nome_file)
+     {
+         /**************
+         cancellare la classe progressbar già implementata in windows
+         **********/
             TcpClient client = null;
             NetworkStream netstream = null;
             try
@@ -72,6 +85,17 @@ namespace ProgettoMalnati1
                 int BufferSize = 1024;/**dimensione del pacchetto inviato**/
 
                 FileStream Fs = new FileStream(nome_file, FileMode.Open, FileAccess.Read);/**apro il file in lettura**/
+                if (Fs == null)
+                {
+                    string s = string.Format("File non trovato.");
+                    MessageBox.Show(s);
+                    return;
+                }
+                else
+                {
+                    string s = string.Format("File trovato.");
+                    MessageBox.Show(s);
+                }
                 int packets_number = Convert.ToInt32
          (Math.Ceiling(Convert.ToDouble(Fs.Length) / Convert.ToDouble(BufferSize)));
                 /**il numero di pacchetti da inviare è pari alla grandezza totale del file diviso la 
@@ -100,7 +124,7 @@ namespace ProgettoMalnati1
                     if (progress_bar.Value >= progress_bar.Maximum)
                         progress_bar.Value = progress_bar.Minimum;
                     //!!!!!!!!!!!!!!!!!!!!!completare PROGRESSBAR
-                    ///////////////progress_bar.PerformStep();
+                    //progress_bar.PerformStep();
 
                 }
 
@@ -145,5 +169,6 @@ namespace ProgettoMalnati1
         }
 
     }
+    
 }
 

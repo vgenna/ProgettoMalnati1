@@ -12,6 +12,10 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System;
+using System.Drawing;
+//
+using System.Windows.Forms;
 
 namespace ProgettoMalnati1
 {
@@ -20,6 +24,7 @@ namespace ProgettoMalnati1
     /// </summary>
     public partial class MainWindow : Window
     {
+        
         public MainWindow()
         {
             InitializeComponent();
@@ -32,7 +37,8 @@ namespace ProgettoMalnati1
             {
                 Client c = new Client();
                 //c.startBroadcast();
-                c.sendString("127.0.0.1", 1500, "frosinone culone");
+                //c.sendString("127.0.0.1", 1500, "frosinone culone");
+                c.sendFileTCP("127.0.0.1",1500,"mav");
             }
             else
             {
@@ -40,9 +46,14 @@ namespace ProgettoMalnati1
                 {
                     Server s = new Server();
                     //s.startBroadcast();
-                    s.receiveString(1500);
+                    //s.receiveString(1500);
+                    s.receiveFileTCP(1500);
                 }
             }
         }
+
+
+
+
     }
 }
