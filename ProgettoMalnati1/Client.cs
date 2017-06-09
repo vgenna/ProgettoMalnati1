@@ -58,6 +58,53 @@ namespace ProgettoMalnati1
             }
         }
 
+        public void startBroadcastSocket()
+        {
+
+            // ipAddress = Dns.Resolve(Dns.GetHostName()).AddressList[0]; RECUPERARE PROPRIO INDIRIZZO IP
+            try
+            {
+
+               
+
+                //Socket sending_socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+                //sending_socket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.Broadcast, 1);
+                //sending_socket.Bind(new IPEndPoint(IPAddress.Parse("172.21.51.15"), 1502));
+
+                IPEndPoint listenEndPoint = new IPEndPoint(IPAddress.Parse("172.21.51.15"), 1501);
+                UdpClient client = new UdpClient(listenEndPoint);
+                client.EnableBroadcast = true;
+
+
+                IPEndPoint groupEP = new IPEndPoint(IPAddress.Broadcast, 1500);
+                IPAddress send_to_address = groupEP.Address; //togliere groupEP e lasciare IP.Broadcast solo (o solo new IP(Broadcast, 1500))
+                IPEndPoint sending_end_point = new IPEndPoint(send_to_address, 1500);
+
+                //sending_socket.Connect(sending_end_point);
+                //sending_socket.SendTo(Encoding.ASCII.GetBytes("Request Data"), sending_end_point);
+
+                byte[] requestData = Encoding.ASCII.GetBytes("Request Data"); //dati da inviare in broadcast
+                client.Send(requestData, requestData.Length, sending_end_point);
+
+
+               //IPEndPoint listenEndPoint = new IPEndPoint(IPAddress.Parse("172.21.51.15"), 1501);
+                //UdpClient listener = new UdpClient(listenEndPoint);
+                IPEndPoint otherEP = null; //verrà popolato al Receive()
+                string received_data;
+                byte[] receive_byte_array;
+
+                receive_byte_array = client.Receive(ref otherEP);
+                received_data = Encoding.ASCII.GetString(receive_byte_array, 0, receive_byte_array.Length);
+                string formattedString = string.Format("Client - Received from {0} , Received data: {1}", otherEP.ToString(), received_data);
+                MessageBox.Show(formattedString);
+
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message);
+            }
+        }
+
         public void sendFileTCP(string IP_addr, Int32 port_number, string nome_file)
         {
             /**************
