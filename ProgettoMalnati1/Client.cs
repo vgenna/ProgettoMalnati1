@@ -65,16 +65,17 @@ namespace ProgettoMalnati1
             try
             {
 
-               
+
 
                 //Socket sending_socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
                 //sending_socket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.Broadcast, 1);
                 //sending_socket.Bind(new IPEndPoint(IPAddress.Parse("172.21.51.15"), 1502));
 
-                IPEndPoint listenEndPoint = new IPEndPoint(IPAddress.Parse("172.21.51.15"), 1501);
+                IPEndPoint listenEndPoint = new IPEndPoint(IPAddress.Parse("192.168.1.3"), 1501);
                 UdpClient client = new UdpClient(listenEndPoint);
                 client.EnableBroadcast = true;
 
+                MessageBox.Show("Trying to send"); 
 
                 IPEndPoint groupEP = new IPEndPoint(IPAddress.Broadcast, 1500);
                 IPAddress send_to_address = groupEP.Address; //togliere groupEP e lasciare IP.Broadcast solo (o solo new IP(Broadcast, 1500))
@@ -86,8 +87,10 @@ namespace ProgettoMalnati1
                 byte[] requestData = Encoding.ASCII.GetBytes("Request Data"); //dati da inviare in broadcast
                 client.Send(requestData, requestData.Length, sending_end_point);
 
+                MessageBox.Show("Client - Sent!");
 
-               //IPEndPoint listenEndPoint = new IPEndPoint(IPAddress.Parse("172.21.51.15"), 1501);
+
+                //IPEndPoint listenEndPoint = new IPEndPoint(IPAddress.Parse("172.21.51.15"), 1501);
                 //UdpClient listener = new UdpClient(listenEndPoint);
                 IPEndPoint otherEP = null; //verrà popolato al Receive()
                 string received_data;
