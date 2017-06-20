@@ -66,6 +66,8 @@ namespace ProgettoMalnati1
             IPEndPoint sending_end_point = new IPEndPoint(send_to_address, 1501);
             sending_socket.SendTo(Encoding.ASCII.GetBytes("Response Data"), sending_end_point);
             MessageBox.Show("Server - Sent!");
+            sending_socket.Close();
+            listener.Close();
         }
 
         public void receiveString(int portN)

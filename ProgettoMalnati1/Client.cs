@@ -77,7 +77,7 @@ namespace ProgettoMalnati1
 
                 MessageBox.Show("Trying to send"); 
 
-                IPEndPoint groupEP = new IPEndPoint(IPAddress.Broadcast, 1500);
+                IPEndPoint groupEP = new IPEndPoint(IPAddress.Parse("192.168.1.255"), 1500);
                 IPAddress send_to_address = groupEP.Address; //togliere groupEP e lasciare IP.Broadcast solo (o solo new IP(Broadcast, 1500))
                 IPEndPoint sending_end_point = new IPEndPoint(send_to_address, 1500);
 
@@ -100,6 +100,8 @@ namespace ProgettoMalnati1
                 received_data = Encoding.ASCII.GetString(receive_byte_array, 0, receive_byte_array.Length);
                 string formattedString = string.Format("Client - Received from {0} , Received data: {1}", otherEP.ToString(), received_data);
                 MessageBox.Show(formattedString);
+
+                client.Close();
 
             }
             catch (Exception e)
@@ -180,6 +182,7 @@ namespace ProgettoMalnati1
                 netstream = client.GetStream();
                 byte[] bytes = Encoding.ASCII.GetBytes(s);
                 netstream.Write(bytes, 0, (int)bytes.Length);
+                MessageBox.Show("Client - Sent!");
             }
             catch (Exception e)
             {
