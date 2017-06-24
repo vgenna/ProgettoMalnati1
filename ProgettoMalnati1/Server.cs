@@ -10,7 +10,11 @@ using System.Net;
 using System.Threading;
 using System.IO;
 
+
 using NetworkCommsDotNet;
+using NetworkCommsDotNet.Connections.UDP;
+using NetworkCommsDotNet.Connections;
+
 
 namespace ProgettoMalnati1
 {
@@ -116,6 +120,39 @@ namespace ProgettoMalnati1
 
 
         }
+
+        public void startBroadcastNetwork()
+        {
+            //ConnectionInfo connInfo = new ConnectionInfo("192.168.0.1", 1501);
+            // Connection newUDPConn = UDPConnection.GetConnection(connInfo, UDPOptions.None);
+
+            //ricezione pacchetti udp
+            NetworkComms.AppendGlobalIncomingPacketHandler<string>("ChatMessage", (packetHeader, connection, incomingString) =>
+            {
+                /*Console.WriteLine("\n  ... Incoming message from " +
+                connection.ToString() + " saying '" +
+                incomingString + "'.");*/
+                string formattedString = String.Format("Server - Received a broadcast from {0} , Received data: {1}", connection.ToString(), incomingString);
+
+                //connection.ConnectionInfo.
+                MessageBox.Show(formattedString);
+                //UDPConnection.SendObject("ChatMessage", "This is the broadcast test message!", new IPEndPoint(IPAddress.Broadcast, 1501));
+                // MessageBox.Show("Server sent!");
+            });
+
+            //Start listening for incoming UDP data
+            Connection.StartListening(ConnectionType.UDP, new IPEndPoint(IPAddress.Any, 1501));
+
+            //invio
+
+        }
+
+
+
+
+
+
+
     }
 }
 

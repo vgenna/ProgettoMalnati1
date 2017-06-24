@@ -42,8 +42,9 @@ namespace ProgettoMalnati1
                 {
                     Server s = new Server();
                     //s.startBroadcast();
-                    s.startBroadcastSocket();     
+                    // s.startBroadcastSocket();
                     //s.receiveString(1500);
+                    s.startBroadcastNetwork();
                 }
             }
         }
