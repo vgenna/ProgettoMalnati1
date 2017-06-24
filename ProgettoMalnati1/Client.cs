@@ -229,6 +229,32 @@ namespace ProgettoMalnati1
             //Start listening for incoming UDP data
             Connection.StartListening(ConnectionType.UDP, new IPEndPoint(IPAddress.Any, 1500));
         }
+        public void clientMulticast()
+        {
+
+            /*Socket s = new Socket(AddressFamily.InterNetwork,SocketType.Dgram, ProtocolType.Udp);
+            IPAddress ip = IPAddress.Parse("224.5.6.7");
+            s.SetSocketOption(SocketOptionLevel.IP,SocketOptionName.AddMembership, new MulticastOption(ip));
+            s.SetSocketOption(SocketOptionLevel.IP,SocketOptionName.MulticastTimeToLive, 1);
+        
+            IPEndPoint ipep = new IPEndPoint(ip, 4567);
+            s.Connect(ipep);
+            
+            byte[] b = Encoding.ASCII.GetBytes("Request data !!");
+            s.Send(b, b.Length, SocketFlags.None);
+            MessageBox.Show("Client - Sent on multicast!");
+            s.Close();*/
+
+            UdpClient udpclient = new UdpClient();
+
+            IPAddress multicastaddress = IPAddress.Parse("224.5.6.7");
+            udpclient.JoinMulticastGroup(multicastaddress);
+            IPEndPoint remoteep = new IPEndPoint(multicastaddress, 2222);
+
+            byte[] b = Encoding.ASCII.GetBytes("Request data !!");
+            udpclient.Send(b, b.Length, remoteep);
+            MessageBox.Show("Client - Sent on multicast!");
+        }
     }
 }
 

@@ -35,6 +35,7 @@ namespace ProgettoMalnati1
                 //c.startBroadcastSocket();
                 //c.sendString("192.168.1.6", 1500, "frosinone culone");
                 //c.startBroadcastNetworkComms();
+                c.clientMulticast();
             }
             else
             {
