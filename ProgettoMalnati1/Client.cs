@@ -13,6 +13,10 @@ using System.IO;
 using ProgettoMalnati1;
 using System.Windows.Controls;
 
+using NetworkCommsDotNet;
+using NetworkCommsDotNet.Connections.UDP;
+using NetworkCommsDotNet.Connections;
+
 namespace ProgettoMalnati1
 {
     class Client
@@ -197,6 +201,34 @@ namespace ProgettoMalnati1
 
         }
 
+        public void startBroadcastNetworkComms() {
+
+            MessageBox.Show("Trying to send");
+
+            UDPConnection.SendObject("ChatMessage", "This is the broadcast test message!", new IPEndPoint(IPAddress.Broadcast, 1501));
+
+            MessageBox.Show("Client - Sent!");
+
+            //We need to define what happens when packets are received.
+            //To do this we add an incoming packet handler for a 'ChatMessage' packet type. 
+            //
+            //We will define what we want the handler to do inline by using a lambda expression
+            //http://msdn.microsoft.com/en-us/library/bb397687.aspx.
+            //We could also just point the AppendGlobalIncomingPacketHandler method 
+            //to a standard method (See AdvancedSend example)
+            //
+            //This handler will convert the incoming raw bytes into a string (this is what 
+            //the <string> bit means) and then write that string to the local console window.
+            NetworkComms.AppendGlobalIncomingPacketHandler<string>("ChatMessage",
+                (packetHeader, connection, incomingString) =>
+                {
+                    string formattedString = string.Format("Client - Received from {0} , Received data: {1}", connection.ToString(), incomingString);
+                    MessageBox.Show(formattedString);
+                });
+          
+            //Start listening for incoming UDP data
+            Connection.StartListening(ConnectionType.UDP, new IPEndPoint(IPAddress.Any, 1500));
+        }
     }
 }
 
