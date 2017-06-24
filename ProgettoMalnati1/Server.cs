@@ -147,12 +147,52 @@ namespace ProgettoMalnati1
 
         }
 
+        public void startMulticast() {
+            //Socket s = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
 
+            //IPEndPoint ipep = new IPEndPoint(IPAddress.Any, 4567);
+            ////EndPoint groupEP = new IPEndPoint(IPAddress.Any, 1500);
+            //s.Bind(ipep);
 
+            //IPAddress ip = IPAddress.Parse("224.5.6.7");
 
+            //s.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.AddMembership, new MulticastOption(ip, IPAddress.Any));
 
+            //byte[] b = new byte[1024];
+            ////s.ReceiveFrom(b, ref groupEP);
+            //s.Receive(b);
+            //string str = Encoding.ASCII.GetString(b, 0, b.Length);
 
+            //IPAddress address = ((IPEndPoint)s.RemoteEndPoint).Address;
 
+            //string formattedString = string.Format("Server - Received multicast from {0} , Received data: '{1}'", address, str);
+
+            //MessageBox.Show(formattedString);
+
+            //s.Close();
+
+            UdpClient client = new UdpClient();
+
+            client.ExclusiveAddressUse = false;
+            IPEndPoint localEp = new IPEndPoint(IPAddress.Any, 2222);
+
+            client.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
+            client.ExclusiveAddressUse = false;
+
+            client.Client.Bind(localEp);
+
+            IPAddress multicastaddress = IPAddress.Parse("239.0.0.222");
+            client.JoinMulticastGroup(multicastaddress);
+
+            Console.WriteLine("Listening this will never quit so you will need to ctrl-c it");
+
+            while (true)
+            {
+                Byte[] data = client.Receive(ref localEp);
+                string strData = Encoding.Unicode.GetString(data);
+                Console.WriteLine(strData);
+            }
+        }
     }
 }
 
