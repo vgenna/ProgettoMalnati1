@@ -148,6 +148,37 @@ namespace ProgettoMalnati1
         }
 
         public void startMulticast() {
+            try
+            {
+                UdpClient udpClient;
+                IPAddress bindAddress = IPAddress.Parse("192.168.1.5");
+                IPAddress groupListenAddress = IPAddress.Parse("224.5.6.7");
+                int port = 2222;
+
+
+                udpClient = new UdpClient();
+                udpClient.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
+                udpClient.Client.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.MulticastLoopback, true);
+
+                IPEndPoint localEndPoint = new IPEndPoint(bindAddress, port);
+                udpClient.Client.Bind(localEndPoint);
+
+                udpClient.JoinMulticastGroup(groupListenAddress);
+
+                IPEndPoint otherEP = null; //verrà popolato al Receive()
+                string received_data;
+                byte[] receive_byte_array;
+
+                receive_byte_array = udpClient.Receive(ref otherEP);
+                received_data = Encoding.ASCII.GetString(receive_byte_array, 0, receive_byte_array.Length);
+                string formattedString = string.Format("Client - Received from {0} , Received data: {1}", otherEP.ToString(), received_data);
+                MessageBox.Show(formattedString);
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message);
+            }
+
         }
         public void receiveFileTCP(int portN)
         {

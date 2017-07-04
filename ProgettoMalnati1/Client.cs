@@ -236,7 +236,7 @@ namespace ProgettoMalnati1
             try
             {
                 UdpClient udpClient;
-                IPAddress bindAddress = IPAddress.Parse("192.168.1.8");
+                IPAddress bindAddress = IPAddress.Parse("192.168.1.5");
                 IPAddress groupListenAddress = IPAddress.Parse("224.5.6.7");
                 int port = 2222;
 
