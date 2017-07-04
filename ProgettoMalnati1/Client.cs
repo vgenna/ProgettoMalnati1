@@ -75,11 +75,12 @@ namespace ProgettoMalnati1
                 //sending_socket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.Broadcast, 1);
                 //sending_socket.Bind(new IPEndPoint(IPAddress.Parse("172.21.51.15"), 1502));
 
-                IPEndPoint listenEndPoint = new IPEndPoint(IPAddress.Parse("192.168.1.3"), 1501);
+                IPEndPoint listenEndPoint = new IPEndPoint(IPAddress.Parse("192.168.1.6"), 1501);
                 UdpClient client = new UdpClient(listenEndPoint);
                 client.EnableBroadcast = true;
 
-                MessageBox.Show("Trying to send"); 
+
+                MessageBox.Show("Trying to send");
 
                 IPEndPoint groupEP = new IPEndPoint(IPAddress.Parse("192.168.1.255"), 1500);
                 IPAddress send_to_address = groupEP.Address; //togliere groupEP e lasciare IP.Broadcast solo (o solo new IP(Broadcast, 1500))
@@ -165,7 +166,7 @@ namespace ProgettoMalnati1
             catch (Exception e)
 
             {
-                Console.WriteLine(e.Message);
+                MessageBox.Show(e.Message);
             }
             finally
             {
@@ -201,7 +202,8 @@ namespace ProgettoMalnati1
 
         }
 
-        public void startBroadcastNetworkComms() {
+        public void startBroadcastNetworkComms()
+        {
 
             MessageBox.Show("Trying to send");
 
@@ -225,35 +227,46 @@ namespace ProgettoMalnati1
                     string formattedString = string.Format("Client - Received from {0} , Received data: {1}", connection.ToString(), incomingString);
                     MessageBox.Show(formattedString);
                 });
-          
+
             //Start listening for incoming UDP data
             Connection.StartListening(ConnectionType.UDP, new IPEndPoint(IPAddress.Any, 1500));
         }
         public void clientMulticast()
         {
+            try
+            {
+                UdpClient udpClient;
+                IPAddress bindAddress = IPAddress.Parse("192.168.1.8");
+                IPAddress groupListenAddress = IPAddress.Parse("224.5.6.7");
+                int port = 2222;
 
-            /*Socket s = new Socket(AddressFamily.InterNetwork,SocketType.Dgram, ProtocolType.Udp);
-            IPAddress ip = IPAddress.Parse("224.5.6.7");
-            s.SetSocketOption(SocketOptionLevel.IP,SocketOptionName.AddMembership, new MulticastOption(ip));
-            s.SetSocketOption(SocketOptionLevel.IP,SocketOptionName.MulticastTimeToLive, 1);
-        
-            IPEndPoint ipep = new IPEndPoint(ip, 4567);
-            s.Connect(ipep);
-            
-            byte[] b = Encoding.ASCII.GetBytes("Request data !!");
-            s.Send(b, b.Length, SocketFlags.None);
-            MessageBox.Show("Client - Sent on multicast!");
-            s.Close();*/
 
-            UdpClient udpclient = new UdpClient();
+                udpClient = new UdpClient();
+                udpClient.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
+                udpClient.Client.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.MulticastLoopback, true);
 
-            IPAddress multicastaddress = IPAddress.Parse("224.5.6.7");
-            udpclient.JoinMulticastGroup(multicastaddress);
-            IPEndPoint remoteep = new IPEndPoint(multicastaddress, 2222);
+                IPEndPoint localEndPoint = new IPEndPoint(bindAddress, port);
+                udpClient.Client.Bind(localEndPoint);
 
-            byte[] b = Encoding.ASCII.GetBytes("Request data !!");
-            udpclient.Send(b, b.Length, remoteep);
-            MessageBox.Show("Client - Sent on multicast!");
+                udpClient.JoinMulticastGroup(groupListenAddress);
+
+                IPEndPoint remoteep = new IPEndPoint(groupListenAddress, 2222);
+
+                MessageBox.Show("Trying to send");
+
+                //sending_socket.Connect(sending_end_point);
+                //sending_socket.SendTo(Encoding.ASCII.GetBytes("Request Data"), sending_end_point);
+
+                byte[] requestData = Encoding.ASCII.GetBytes("Request Data"); //dati da inviare in broadcast
+                udpClient.Send(requestData, requestData.Length, remoteep);
+
+                MessageBox.Show("Client - Sent!");
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message);
+            }
+
         }
     }
 }

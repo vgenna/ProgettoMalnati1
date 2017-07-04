@@ -148,50 +148,6 @@ namespace ProgettoMalnati1
         }
 
         public void startMulticast() {
-            //Socket s = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
-
-            //IPEndPoint ipep = new IPEndPoint(IPAddress.Any, 4567);
-            ////EndPoint groupEP = new IPEndPoint(IPAddress.Any, 1500);
-            //s.Bind(ipep);
-
-            //IPAddress ip = IPAddress.Parse("224.5.6.7");
-
-            //s.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.AddMembership, new MulticastOption(ip, IPAddress.Any));
-
-            //byte[] b = new byte[1024];
-            ////s.ReceiveFrom(b, ref groupEP);
-            //s.Receive(b);
-            //string str = Encoding.ASCII.GetString(b, 0, b.Length);
-
-            //IPAddress address = ((IPEndPoint)s.RemoteEndPoint).Address;
-
-            //string formattedString = string.Format("Server - Received multicast from {0} , Received data: '{1}'", address, str);
-
-            //MessageBox.Show(formattedString);
-
-            //s.Close();
-
-            UdpClient client = new UdpClient();
-
-            client.ExclusiveAddressUse = false;
-            IPEndPoint localEp = new IPEndPoint(IPAddress.Any, 2222);
-
-            client.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
-            client.ExclusiveAddressUse = false;
-
-            client.Client.Bind(localEp);
-
-            IPAddress multicastaddress = IPAddress.Parse("239.0.0.222");
-            client.JoinMulticastGroup(multicastaddress);
-
-            Console.WriteLine("Listening this will never quit so you will need to ctrl-c it");
-
-            while (true)
-            {
-                Byte[] data = client.Receive(ref localEp);
-                string strData = Encoding.Unicode.GetString(data);
-                Console.WriteLine(strData);
-            }
         }
         public void receiveFileTCP(int portN)
         {
@@ -206,7 +162,7 @@ namespace ProgettoMalnati1
             {
                 System.Windows.MessageBox.Show(ex.Message);
             }
-            int BufferSize = 1024;
+            int BufferSize = 1024*1024;
 
             byte[] RecData = new byte[BufferSize];
             int RecBytes;
@@ -232,7 +188,7 @@ namespace ProgettoMalnati1
                         //result = System.Windows.MessageBox.Show(message, caption, buttons);
 
                         //file selection
-                        string SaveFileName = "ricevuto.txt";//string.Empty;
+                        string SaveFileName = "ricevuto1.pdf";//string.Empty;
                         /*SaveFileDialog DialogSave = new SaveFileDialog();
                         DialogSave.Filter = "All files (*.*)|*.*";
                         DialogSave.RestoreDirectory = true;
@@ -249,7 +205,7 @@ namespace ProgettoMalnati1
                                 Fs.Write(RecData, 0, RecBytes);
                                 totalrecbytes += RecBytes;
                                 string s = string.Format("Ricevuti {0} byte", totalrecbytes);
-                                System.Windows.MessageBox.Show(s);
+                                MessageBox.Show(s);
                             }
                             Fs.Close();
 
@@ -265,7 +221,7 @@ namespace ProgettoMalnati1
                         client.Close();
                     }
                 }
-                catch (Exception e) { Console.WriteLine(e.Message); }
+                catch (Exception e) { MessageBox.Show("Eccezione!!"); }
 
             }
 
