@@ -49,11 +49,6 @@ namespace ProgettoMalnati1
                 }
             }
 
-            //foreach(OtherUser ou in usersToShare)
-            //{
-            //    MessageBox.Show(ou.Name);
-            //}
-
 
             string nomefile = "prova.txt";
             List<Thread> threadList = new List<Thread>();

@@ -34,23 +34,14 @@ namespace ProgettoMalnati1
             {
                 Client c = new Client();
                 c.startBroadcastSocket();
-                WinOtherUsers winOU = new WinOtherUsers(c);
-
-                
+                WinOtherUsers winOU = new WinOtherUsers(c);           
 
                 foreach (OtherUser ou in c.otherUsers.Values)
                 {
-                    //string formattedString = string.Format("{0} is at IP: {1}", ou.Name, ou.Address);
-                    //ListBoxItem itm = new ListBoxItem();
-                    //itm.Content = formattedString;
-
-                    //MessageBox.Show(c.otherUsers[ou.Name].Address.ToString()); //per prendere gli indirizzi sapendo il nome
                     CheckBox cb = new CheckBox();
                     cb.Name = ou.Name;
                     cb.Content = ou.Name;
                     winOU.stackP.Children.Add(cb);
-                    //winOU.listBox.Items.Add(itm);
-                    //winOU.listView.Items.Add(formattedString);
                 }
 
                 winOU.Show();

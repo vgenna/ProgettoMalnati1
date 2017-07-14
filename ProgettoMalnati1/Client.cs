@@ -41,13 +41,14 @@ namespace ProgettoMalnati1
             try
             {
                 MessageBox.Show("Trying to send");
+                string broadcastAddress = getBroadcastAdd(myIP);
+                //MessageBox.Show(broadcastAddress);
+                IPEndPoint sending_end_point = new IPEndPoint(IPAddress.Parse(broadcastAddress), 1500); 
 
-                IPEndPoint sending_end_point = new IPEndPoint(IPAddress.Parse("192.168.1.255"), 1500);
-
-                byte[] requestData = Encoding.ASCII.GetBytes("Request Data Malnati"); //dati da inviare in broadcast
+                byte[] requestData = Encoding.ASCII.GetBytes("Request Data Malnati"); //dati da inviare in broadcast-->NOME FILE
 
                 for(int i=0;i<5;i++)
-                 client.Send(requestData, requestData.Length, sending_end_point);
+                 client.Send(requestData, requestData.Length, sending_end_point); //VEDERE SE IL PROBLEMA ERA SOLO IL PC DI SAVERIO E NE BASTA 1
 
                 MessageBox.Show("Client - Sent!");
 
@@ -62,10 +63,7 @@ namespace ProgettoMalnati1
                         receive_byte_array = client.Receive(ref otherEP);
                         received_data = Encoding.ASCII.GetString(receive_byte_array, 0, receive_byte_array.Length);
                         
-                        otherUsers.Add(received_data, new OtherUser(otherEP.Address, received_data)); //GESTIRE CASO DI CHIAVE UGUALE
-                        
-                        //string formattedString = string.Format("Client - Received from {0} , Received data: {1}", otherEP.Address, received_data);
-                        //MessageBox.Show(formattedString);
+                        otherUsers.Add(received_data, new OtherUser(otherEP.Address, received_data)); //GESTIRE CASO DI CHIAVE UGUALE  
                     }
                     catch (SocketException e)
                     {
@@ -75,12 +73,6 @@ namespace ProgettoMalnati1
                 }
                 //qui dovrei avere la lista con tutti i vari (IP,nome) di quelli che hanno risposto al messaggio udp entro 2 secondi
 
-                //TOGLIEREEEEEEEEEEEEEEE
-                foreach(OtherUser ou in otherUsers.Values)
-                {
-                    string formattedString = string.Format("{0} is at IP: {1}", ou.Name, ou.Address);
-                   // MessageBox.Show(formattedString);
-                }
                 client.Close();
             }
             catch (Exception e)
@@ -88,6 +80,16 @@ namespace ProgettoMalnati1
                 MessageBox.Show("Exception: " + e.Message);
                 client.Close();
             }
+        }
+
+        private string getBroadcastAdd(string myIP)
+        {
+            int lenght = myIP.Length;
+            Char delimiter = '.';
+            string[] fields = myIP.Split(delimiter);
+            string broadcast = fields[0] + "." + fields[1] + "." + fields[2] + ".255";
+
+            return broadcast;
         }
 
         public void sendFileTCP(string IP_addr, Int32 port_number, string nome_file)
@@ -147,7 +149,8 @@ namespace ProgettoMalnati1
             }
         }
 
-   public static string GetLocalIPAddress() {
+   private static string GetLocalIPAddress() {
+            string myIP = null;
             foreach (NetworkInterface ni in NetworkInterface.GetAllNetworkInterfaces())
             {
                 if (ni.NetworkInterfaceType == NetworkInterfaceType.Wireless80211 /*|| ni.NetworkInterfaceType == NetworkInterfaceType.Ethernet*/)
@@ -156,12 +159,15 @@ namespace ProgettoMalnati1
                     {
                         if (ip.Address.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
                         {
-                            return ip.Address.ToString();
+                            myIP = ip.Address.ToString();
                         }
                     }
                 }
             }
-            throw new Exception("Local IP Address Not Found!");
+            if (myIP != null)
+                return myIP;
+            else
+                throw new Exception("Local IP Address Not Found!");
         }
     }
 }
