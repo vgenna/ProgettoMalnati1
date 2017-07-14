@@ -13,6 +13,8 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
+using System.Threading;
+
 namespace ProgettoMalnati1
 {
     /// <summary>
@@ -27,28 +29,41 @@ namespace ProgettoMalnati1
 
         private void button_Click(object sender, RoutedEventArgs e)
         {
-           
+
             if (clientButton.IsChecked == true)
             {
                 Client c = new Client();
-                //c.startBroadcast();
-                //c.startBroadcastSocket();
-                //c.sendString("192.168.1.6", 1500, "frosinone culone");
-                //c.startBroadcastNetworkComms();
-                c.clientMulticast();
-                //c.sendFileTCP("127.0.0.1", 1500, "prova1.pdf");
+                c.startBroadcastSocket();
+                WinOtherUsers winOU = new WinOtherUsers(c);
+
+                
+
+                foreach (OtherUser ou in c.otherUsers.Values)
+                {
+                    //string formattedString = string.Format("{0} is at IP: {1}", ou.Name, ou.Address);
+                    //ListBoxItem itm = new ListBoxItem();
+                    //itm.Content = formattedString;
+
+                    //MessageBox.Show(c.otherUsers[ou.Name].Address.ToString()); //per prendere gli indirizzi sapendo il nome
+                    CheckBox cb = new CheckBox();
+                    cb.Name = ou.Name;
+                    cb.Content = ou.Name;
+                    winOU.stackP.Children.Add(cb);
+                    //winOU.listBox.Items.Add(itm);
+                    //winOU.listView.Items.Add(formattedString);
+                }
+
+                winOU.Show();
             }
             else
             {
                 if (serverButton.IsChecked == true)
                 {
                     Server s = new Server();
-                    //s.startBroadcast();
-                    // s.startBroadcastSocket();
-                    //s.receiveString(1500);
-                    //s.startBroadcastNetwork();
-                    s.startMulticast();
-                    //s.receiveFileTCP(1500);
+                   
+                    s.startBroadcastSocket();
+                    
+                    s.receiveFileTCP(1500);
                 }
             }
         }

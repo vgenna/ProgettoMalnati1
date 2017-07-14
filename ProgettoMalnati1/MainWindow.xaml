@@ -10,6 +10,5 @@
         <Button x:Name="button" Content="Connetti" HorizontalAlignment="Left" Margin="222,210,0,0" VerticalAlignment="Top" Width="75" Click="button_Click"/>
         <RadioButton x:Name="clientButton" Content="Client" HorizontalAlignment="Left" Margin="107,135,0,0" VerticalAlignment="Top"/>
         <RadioButton x:Name="serverButton" Content="Server" HorizontalAlignment="Left" Margin="355,135,0,0" VerticalAlignment="Top"/>
-        <GridSplitter x:Name="gridSplitter" HorizontalAlignment="Left" Height="100" Margin="-150,78,0,0" VerticalAlignment="Top" Width="5"/>
     </Grid>
 </Window>

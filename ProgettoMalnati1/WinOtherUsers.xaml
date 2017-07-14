@@ -1,0 +1,14 @@
+﻿<Window x:Class="ProgettoMalnati1.WinOtherUsers"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ProgettoMalnati1"
+        mc:Ignorable="d"
+        Title="WinOtherUsers" Height="300" Width="300">
+    <Grid>
+        <StackPanel Name="stackP" HorizontalAlignment="Left" Height="202" Margin="10,31,0,0" VerticalAlignment="Top" Width="272"/>
+        <TextBlock x:Name="titleWinOU" HorizontalAlignment="Left" Margin="35,10,0,0" TextWrapping="Wrap" Text="Seleziona gli utenti con cui condividere" VerticalAlignment="Top" Width="209"/>
+        <Button x:Name="condividiButton" Content="Condividi" HorizontalAlignment="Left" Margin="109,238,0,0" VerticalAlignment="Top" Width="75" Click="condividiButton_Click"/>
+    </Grid>
+</Window>
