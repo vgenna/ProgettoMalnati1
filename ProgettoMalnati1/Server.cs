@@ -27,7 +27,7 @@ namespace ProgettoMalnati1
 
         public void startBroadcastSocket()
         {
-            UdpClient listener = new UdpClient(1500);
+            UdpClient listener = new UdpClient(1500); //LA PORTA VA SCELTA CASUALMENTE E INVIATA AL CLIENT
             IPEndPoint groupEP = new IPEndPoint(IPAddress.Any, 1500);
             string received_data;
             byte[] receive_byte_array;
@@ -40,7 +40,7 @@ namespace ProgettoMalnati1
             Socket sending_socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram,ProtocolType.Udp);
             IPAddress send_to_address = groupEP.Address;
             IPEndPoint sending_end_point = new IPEndPoint(send_to_address, 1501);
-            sending_socket.SendTo(Encoding.ASCII.GetBytes("BuonFabio"), sending_end_point);
+            sending_socket.SendTo(Encoding.ASCII.GetBytes("NINOzzp"), sending_end_point);
             MessageBox.Show("Server - Sent!");
             sending_socket.Close();
             listener.Close();
@@ -83,7 +83,7 @@ namespace ProgettoMalnati1
                         netstream = client.GetStream();
                         Status = "Connected to a client\n";
                         //result = System.Windows.MessageBox.Show(message, caption, buttons);
-
+                        
                         //file selection
                         string SaveFileName = "provaRic.txt";//string.Empty;
                         /*SaveFileDialog DialogSave = new SaveFileDialog();

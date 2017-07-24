@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
+using System.Windows.Forms;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -55,6 +56,24 @@ namespace ProgettoMalnati1
                 //    this.progressBar.Value = 20; // Do all the ui thread updates here
                 //}));
 
+                //Thread t = new Thread();
+                //t.Start();
+
+                /*Thread some_thread = new Thread(delegate ()
+                    {
+                        {
+                            for (;;)
+                            {
+                                System.Windows.Forms.Control.Invoke((MethodInvoker)delegate
+                                {
+                                    sendFileTCP(ou.Address.ToString(), 1500, nomefile, worker);
+                                });
+                            }
+                        }
+                    });
+                some_thread.Start();*/
+
+
 
                 //Action workAction = delegate
                 //{
@@ -70,46 +89,22 @@ namespace ProgettoMalnati1
 
                 worker.RunWorkerCompleted += delegate
                 {
-                    MessageBox.Show(string.Format("File {0} condiviso!", nomefile));
+                    System.Windows.MessageBox.Show(string.Format("File {0} condiviso!", nomefile));
                     //this.Close();
                 };
-                worker.RunWorkerAsync(); //PARTE MA NON RITORNA PIù BOHHHH
+                worker.RunWorkerAsync(); //PARTE MA NON RITORNA PIù BOHHHH*/
                 //}
 
                 //Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Background, workAction);
-            }           
+            }
         }
-
-        /* private void Window_ContentRendered(object sender, EventArgs e)
-         {
-             BackgroundWorker worker = new BackgroundWorker();
-             worker.WorkerReportsProgress = true;
-             worker.DoWork += worker_DoWork;
-             worker.ProgressChanged += worker_ProgressChanged;
-             MessageBox.Show("?");
-             worker.RunWorkerAsync();
-         }
-
-         void worker_DoWork(object sender, DoWorkEventArgs e)
-         {
-             for (int i = 0; i < 100; i++)
-             {
-                 (sender as BackgroundWorker).ReportProgress(i);
-                 Thread.Sleep(100);
-             }
-         }
-
-         void worker_ProgressChanged(object sender, ProgressChangedEventArgs e)
-         {
-             pBar.Value = e.ProgressPercentage;
-         }*/
 
         private void worker_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
             if (e.ProgressPercentage == -1)
                 pBar.Maximum = Convert.ToInt32(e.UserState);
             else
-                pBar.Value = e.ProgressPercentage;
+                pBar.Value += e.ProgressPercentage;
         }
 
         public void sendFileTCP(string IP_addr, Int32 port_number, string nome_file, BackgroundWorker worker)
@@ -120,7 +115,7 @@ namespace ProgettoMalnati1
             {
                 client = new TcpClient(IP_addr, port_number);
                 netstream = client.GetStream();
-                int BufferSize = 1024*1024;/**dimensione del pacchetto inviato**/
+                int BufferSize = 1024 * 1024;/**dimensione del pacchetto inviato**/
                 int sent = 0;
 
                 FileStream Fs = new FileStream(nome_file, FileMode.Open, FileAccess.Read);/**apro il file in lettura**/
@@ -129,6 +124,11 @@ namespace ProgettoMalnati1
             grandezza del buffer**/
 
                 int lunghezza_file = (int)Fs.Length, dim_pacchetto_corrente;
+
+                string stringInvio = nome_file + "*";
+                byte[] stringBytes = Encoding.ASCII.GetBytes(stringInvio);
+                netstream.Write(stringBytes, 0, nome_file.Length + 1);
+                System.Windows.MessageBox.Show(stringInvio);
 
                 for (int i = 0; i < packets_number; i++)
                 {
@@ -147,7 +147,7 @@ namespace ProgettoMalnati1
                     //aggiorno la progressBar con il numero dei byte inviati
                     //pBar.Dispatcher.BeginInvoke((Action)delegate { pBar.Value += (dim_pacchetto_corrente / nBytesTot) * 100; }); // Invoke esegue sullo stesso thread (sincrono)
                     //pBar.Value += (dim_pacchetto_corrente / nBytesTot) * 100;
-                    sent += dim_pacchetto_corrente;
+                    sent = dim_pacchetto_corrente;
                     worker.ReportProgress(sent);
 
                 }
@@ -155,7 +155,7 @@ namespace ProgettoMalnati1
             catch (Exception e)
 
             {
-                MessageBox.Show(e.Message);
+                System.Windows.MessageBox.Show(e.Message);
             }
             finally
             {
