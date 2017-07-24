@@ -85,66 +85,85 @@ namespace ProgettoMalnati1
         public static void receiveNewFile(TcpClient client)
         {
             /*********/
-            int BufferSize = 1024 * 1024;
-
-            byte[] RecData = new byte[BufferSize];
-            int RecBytes;
-            NetworkStream netstream = null;
-            string Status = string.Empty;
-
-
-            netstream = client.GetStream();//passare il client
-            Status = "Connected to a client\n";
-            //result = System.Windows.MessageBox.Show(message, caption, buttons);
-
-            //file selection
-            /*****/
-            //ricevo nome file fino all'asterisco
-            byte[] RecData_2 = new byte[1];
-
-            string nomeFile = null;
-            while ((RecBytes = netstream.Read(RecData_2, 0, 1)) > 0)
+            try
             {
-                string tmp = System.Text.Encoding.UTF8.GetString(RecData_2);
-                if (tmp.CompareTo("*") == 0)
+                int BufferSize = 1024 * 1024;
+
+                byte[] RecData = new byte[BufferSize];
+                int RecBytes;
+                NetworkStream netstream = null;
+                string Status = string.Empty;
+
+
+                netstream = client.GetStream();//passare il client
+                Status = "Connected to a client\n";
+                //result = System.Windows.MessageBox.Show(message, caption, buttons);
+
+                //file selection
+                /*****/
+                //ricevo nome file fino all'asterisco
+                byte[] RecData_2 = new byte[1];
+
+                string nomeFile = null;
+                while ((RecBytes = netstream.Read(RecData_2, 0, 1)) > 0)
                 {
-                    nomeFile = nomeFile + '\0';
-                    break;
+                    string tmp = System.Text.Encoding.UTF8.GetString(RecData_2);
+                    if (tmp.CompareTo("*") == 0)
+                    {
+                        //nomeFile = nomeFile;
+                        break;
+                    }
+                    else
+                    {
+                        nomeFile = nomeFile + tmp;
+                    }
+                }
+                string serv = "Server:";
+                
+                /******/
+                while(File.Exists(nomeFile))
+                {
+                    string s = null;
+                    String[] words = nomeFile.Split('.');
+                    s = words[0];
+                    for(int i = 1; i < words.Length-1; i++)
+                    {
+                        
+                        s = s + "." + words[i];
+                    }
+                    s += " - Copy." + words[words.Length - 1];
+                    nomeFile = s;
+                }
+                /*******/
+                string SaveFileName = nomeFile;
+                if (SaveFileName != string.Empty)
+                {
+                    int totalrecbytes = 0;
+                    FileStream Fs = new FileStream(SaveFileName, FileMode.OpenOrCreate, FileAccess.Write);
+                    while ((RecBytes = netstream.Read(RecData, 0, RecData.Length)) > 0)
+                    {
+                        Fs.Write(RecData, 0, RecBytes);
+                        totalrecbytes += RecBytes;
+                        //string s = string.Format("Ricevuti {0} byte", totalrecbytes);
+                        //MessageBox.Show(s);
+                    }
+                    Fs.Close();
+                    MessageBox.Show(string.Format("Ricevuti '{0}'", nomeFile));
                 }
                 else
                 {
-                    nomeFile = nomeFile + tmp;
+                    string s = string.Format("File non trovato.");
+                    System.Windows.MessageBox.Show(s);
                 }
+
+
+                netstream.Close();
+                client.Close();
             }
-            MessageBox.Show(nomeFile);
-            /******/
-
-
-            string SaveFileName = nomeFile;
-            if (SaveFileName != string.Empty)
+            catch(Exception ex)
             {
-                int totalrecbytes = 0;
-                FileStream Fs = new FileStream(SaveFileName, FileMode.OpenOrCreate, FileAccess.Write);
-                while ((RecBytes = netstream.Read(RecData, 0, RecData.Length)) > 0)
-                {
-                    Fs.Write(RecData, 0, RecBytes);
-                    totalrecbytes += RecBytes;
-                    //string s = string.Format("Ricevuti {0} byte", totalrecbytes);
-                    //MessageBox.Show(s);
-                }
-                Fs.Close();
-
+                MessageBox.Show(ex.Message);
             }
-            else
-            {
-                string s = string.Format("File non trovato.");
-                System.Windows.MessageBox.Show(s);
-            }
-
-
-            netstream.Close();
-            client.Close();
-
 
         }
         /********************/
@@ -209,18 +228,10 @@ namespace ProgettoMalnati1
                     {
                         client = Listener.AcceptTcpClient();
                         netstream = client.GetStream();
-                        Status = "Connected to a client\n";
-                        //result = System.Windows.MessageBox.Show(message, caption, buttons);
-                        
+                       
                         //file selection
                         string SaveFileName = "provaRic.txt";//string.Empty;
-                        /*SaveFileDialog DialogSave = new SaveFileDialog();
-                        DialogSave.Filter = "All files (*.*)|*.*";
-                        DialogSave.RestoreDirectory = true;
-                        DialogSave.Title = "Where do you want to save the file?";
-                        DialogSave.InitialDirectory = @"C:/";
-                        if (DialogSave.ShowDialog() == DialogResult.OK)
-                            SaveFileName = DialogSave.FileName;*/
+                       
                         if (SaveFileName != string.Empty)
                         {
                             int totalrecbytes = 0;

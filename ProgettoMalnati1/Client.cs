@@ -52,7 +52,7 @@ namespace ProgettoMalnati1
 
                 byte[] requestData = Encoding.ASCII.GetBytes("Request Data Malnati"); //dati da inviare in broadcast-->NOME FILE-->NO! VA NELL'INVIO TCP
 
-                for(int i=0;i<5;i++)
+                //for(int i=0;i<5;i++)
                  client.Send(requestData, requestData.Length, sending_end_point); //VEDERE SE IL PROBLEMA ERA SOLO IL PC DI SAVERIO E NE BASTA 1
 
                 MessageBox.Show("Client - Sent!");

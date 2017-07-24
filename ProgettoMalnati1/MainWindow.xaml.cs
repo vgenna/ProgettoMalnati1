@@ -52,11 +52,12 @@ namespace ProgettoMalnati1
             {
                 if (serverButton.IsChecked == true)
                 {
-                    Server s = new Server();
+                    /*Server s = new Server();
                    
                     s.startBroadcastSocket();
                     
-                    s.receiveFileTCP(1500);
+                    s.receiveFileTCP(1500);*/
+                    Server s = new Server(2);
                 }
             }
         }

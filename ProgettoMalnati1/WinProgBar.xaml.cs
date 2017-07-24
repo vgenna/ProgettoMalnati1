@@ -39,7 +39,7 @@ namespace ProgettoMalnati1
 
             this.c = c;
 
-            string nomefile = "prova.txt";
+            string nomefile = "test1newMb.db";
 
             //QUESTO DOVRA' ESSERE FATTO NEL COSTRUTTORE DEL CLIENT, PERCHE' CI SARA' GIA' LI' IL PATH
             long length = new System.IO.FileInfo(nomefile).Length;
