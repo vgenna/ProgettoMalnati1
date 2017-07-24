@@ -17,16 +17,21 @@ using NetworkCommsDotNet;
 using NetworkCommsDotNet.Connections.UDP;
 using NetworkCommsDotNet.Connections;
 using System.Net.NetworkInformation;
+using System.Windows.Threading;
 
 namespace ProgettoMalnati1
 {
     public class Client
     {
         public Dictionary<string, OtherUser> otherUsers;
+        public List<OtherUser> usersToShare;
+        public string filename;
+        public long nBytesTot;
 
         public Client()
         {
             otherUsers = new Dictionary<string, OtherUser>();
+            usersToShare = new List<OtherUser>();
         }
 
         public void startBroadcastSocket()
@@ -45,7 +50,7 @@ namespace ProgettoMalnati1
                 //MessageBox.Show(broadcastAddress);
                 IPEndPoint sending_end_point = new IPEndPoint(IPAddress.Parse(broadcastAddress), 1500); 
 
-                byte[] requestData = Encoding.ASCII.GetBytes("Request Data Malnati"); //dati da inviare in broadcast-->NOME FILE
+                byte[] requestData = Encoding.ASCII.GetBytes("Request Data Malnati"); //dati da inviare in broadcast-->NOME FILE-->NO! VA NELL'INVIO TCP
 
                 for(int i=0;i<5;i++)
                  client.Send(requestData, requestData.Length, sending_end_point); //VEDERE SE IL PROBLEMA ERA SOLO IL PC DI SAVERIO E NE BASTA 1
@@ -65,7 +70,7 @@ namespace ProgettoMalnati1
                         
                         otherUsers.Add(received_data, new OtherUser(otherEP.Address, received_data)); //GESTIRE CASO DI CHIAVE UGUALE  
                     }
-                    catch (SocketException e)
+                    catch (SocketException)
                     {
                         //MessageBox.Show("Timeout expired!");
                         timeout = true;
@@ -92,11 +97,8 @@ namespace ProgettoMalnati1
             return broadcast;
         }
 
-        public void sendFileTCP(string IP_addr, Int32 port_number, string nome_file)
+        public void sendFileTCP(string IP_addr, Int32 port_number, string nome_file, ProgressBar pBar)
         {
-            /**************
-            cancellare la classe progressbar già implementata in windows
-            **********/
             TcpClient client = null;
             NetworkStream netstream = null;
             try
@@ -106,18 +108,11 @@ namespace ProgettoMalnati1
                 int BufferSize = 1024;/**dimensione del pacchetto inviato**/
 
                 FileStream Fs = new FileStream(nome_file, FileMode.Open, FileAccess.Read);/**apro il file in lettura**/
-                int packets_number = Convert.ToInt32
-         (Math.Ceiling(Convert.ToDouble(Fs.Length) / Convert.ToDouble(BufferSize)));
+                int packets_number = Convert.ToInt32(Math.Ceiling(Convert.ToDouble(Fs.Length) / Convert.ToDouble(BufferSize)));
                 /**il numero di pacchetti da inviare è pari alla grandezza totale del file diviso la 
             grandezza del buffer**/
 
-                ProgressBar progress_bar = new ProgressBar();
-                progress_bar.Value = 0;
-                progress_bar.Minimum = 0;
-                progress_bar.Maximum = packets_number;
-                //progress_bar.
-
-                int lunghezza_file = (int)Fs.Length, dim_pacchetto_corrente, cont = 0;
+                int lunghezza_file = (int)Fs.Length, dim_pacchetto_corrente;
 
                 for (int i = 0; i < packets_number; i++)
                 {
@@ -128,13 +123,14 @@ namespace ProgettoMalnati1
                     }
                     else
                         dim_pacchetto_corrente = lunghezza_file;
+
                     byte[] SendingBuffer = new byte[dim_pacchetto_corrente];
                     Fs.Read(SendingBuffer, 0, dim_pacchetto_corrente);
                     netstream.Write(SendingBuffer, 0, (int)SendingBuffer.Length);
-                    if (progress_bar.Value >= progress_bar.Maximum)
-                        progress_bar.Value = progress_bar.Minimum;
-                    //!!!!!!!!!!!!!!!!!!!!!completare PROGRESSBAR
-                    ///////////////progress_bar.PerformStep();
+
+                    //aggiorno la progressBar con il numero dei byte inviati
+                    //pBar.Dispatcher.BeginInvoke((Action)delegate { pBar.Value += (dim_pacchetto_corrente / nBytesTot) * 100; }); // Invoke esegue sullo stesso thread (sincrono)
+                    pBar.Value += (dim_pacchetto_corrente / nBytesTot) * 100;
                 }
             }
             catch (Exception e)

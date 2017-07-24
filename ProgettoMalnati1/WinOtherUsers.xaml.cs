@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.IO;
 using System.Linq;
+using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -12,6 +15,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using System.Windows.Threading;
 
 namespace ProgettoMalnati1
 {
@@ -35,8 +39,7 @@ namespace ProgettoMalnati1
         private void condividiButton_Click(object sender, RoutedEventArgs e)
         {
 
-            //qui devo selezionare quelli a cui voglio inviare e devo metterli in una nuova lista (usersToShare)
-            List<OtherUser> usersToShare = new List<OtherUser>();
+            //qui devo selezionare quelli a cui voglio inviare e devo metterli nella lista (usersToShare)
             foreach (UIElement child in stackP.Children)
             {
                 if (child is CheckBox)
@@ -44,35 +47,15 @@ namespace ProgettoMalnati1
                     var childCB = child as CheckBox;
                     if (childCB.IsChecked == true)
                     {
-                        usersToShare.Add(c.otherUsers[childCB.Name]);
+                        c.usersToShare.Add(c.otherUsers[childCB.Name]);
                     }
                 }
             }
 
-
-            string nomefile = "prova.txt";
-            List<Thread> threadList = new List<Thread>();
-            foreach (OtherUser ou in usersToShare)
-            {
-                Thread newthread = new Thread(() => c.sendFileTCP(ou.Address.ToString(), 1500, nomefile));
-                newthread.SetApartmentState(ApartmentState.STA);
-                threadList.Add(newthread);
-                newthread.Start();
-                //Application.Current.Dispatcher.BeginInvoke((Action)delegate {
-                //UTILIZZARE BACKGROUND WORKER PER NON FAR BLOCCARE L'INTERFACCIA
-                //    c.sendFileTCP(ou.Address.ToString(), 1500, nomefile);
-
-                //});
-            }
+            WinProgBar winPB = new WinProgBar(c);
 
             this.Close();
-
-            foreach(Thread t in threadList)
-            {
-                t.Join();
-            }
-
-            MessageBox.Show(string.Format("File {0} condiviso!", nomefile));
         }
+
     }
 }

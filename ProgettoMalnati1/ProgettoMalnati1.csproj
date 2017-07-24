@@ -65,6 +65,9 @@
     <Compile Include="WinOtherUsers.xaml.cs">
       <DependentUpon>WinOtherUsers.xaml</DependentUpon>
     </Compile>
+    <Compile Include="WinProgBar.xaml.cs">
+      <DependentUpon>WinProgBar.xaml</DependentUpon>
+    </Compile>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -79,6 +82,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="WinOtherUsers.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="WinProgBar.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

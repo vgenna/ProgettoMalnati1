@@ -1,0 +1,14 @@
+﻿<Window x:Class="ProgettoMalnati1.WinProgBar"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ProgettoMalnati1"
+        mc:Ignorable="d"
+        Title="WinProgBar" Height="150" Width="300">
+    <Grid>
+        <ProgressBar Name="pBar" Minimum="0" HorizontalAlignment="Left" Height="27" Margin="10,36,0,0" VerticalAlignment="Top" Width="272"/>
+        <Button x:Name="button" Content="Abort" HorizontalAlignment="Left" Margin="104,88,0,0" VerticalAlignment="Top" Width="75"/>
+
+    </Grid>
+</Window>

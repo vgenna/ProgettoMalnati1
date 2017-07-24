@@ -45,6 +45,8 @@ namespace ProgettoMalnati1
                 }
 
                 winOU.Show();
+                this.Close();
+                //fine client
             }
             else
             {
