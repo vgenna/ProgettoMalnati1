@@ -85,13 +85,17 @@ namespace ProgettoMalnati1
         public static void receiveNewFile(TcpClient client)
         {
             /*********/
+            NetworkStream netstream = null;
+            string nomeFile = null;
+            bool errore = false;
+            FileStream Fs = null;
             try
             {
                 int BufferSize = 1024 * 1024;
 
                 byte[] RecData = new byte[BufferSize];
                 int RecBytes;
-                NetworkStream netstream = null;
+                //NetworkStream netstream = null;
                 string Status = string.Empty;
 
 
@@ -104,7 +108,7 @@ namespace ProgettoMalnati1
                 //ricevo nome file fino all'asterisco
                 byte[] RecData_2 = new byte[1];
 
-                string nomeFile = null;
+
                 while ((RecBytes = netstream.Read(RecData_2, 0, 1)) > 0)
                 {
                     string tmp = System.Text.Encoding.UTF8.GetString(RecData_2);
@@ -118,26 +122,29 @@ namespace ProgettoMalnati1
                         nomeFile = nomeFile + tmp;
                     }
                 }
-                
-                while(File.Exists(nomeFile))
+
+
+                /******/
+                while (File.Exists(nomeFile))
                 {
                     string s = null;
                     String[] words = nomeFile.Split('.');
                     s = words[0];
-                    for(int i = 1; i < words.Length-1; i++)
+                    for (int i = 1; i < words.Length - 1; i++)
                     {
-                        
+
                         s = s + "." + words[i];
                     }
                     s += " - Copy." + words[words.Length - 1];
                     nomeFile = s;
                 }
-
+                /*******/
                 string SaveFileName = nomeFile;
                 if (SaveFileName != string.Empty)
                 {
                     int totalrecbytes = 0;
-                    FileStream Fs = new FileStream(SaveFileName, FileMode.OpenOrCreate, FileAccess.Write);
+                    Fs = new FileStream(SaveFileName, FileMode.OpenOrCreate, FileAccess.Write);
+
                     while ((RecBytes = netstream.Read(RecData, 0, RecData.Length)) > 0)
                     {
                         Fs.Write(RecData, 0, RecBytes);
@@ -146,6 +153,7 @@ namespace ProgettoMalnati1
                         //MessageBox.Show(s);
                     }
                     Fs.Close();
+
                     MessageBox.Show(string.Format("Ricevuti '{0}'", nomeFile));
                 }
                 else
@@ -153,15 +161,35 @@ namespace ProgettoMalnati1
                     string s = string.Format("File non trovato.");
                     System.Windows.MessageBox.Show(s);
                 }
-
-
-                netstream.Close();
-                client.Close();
             }
-            catch(Exception ex)
+            catch (IOException ex)
+            {
+                MessageBox.Show("Trasferimento interrotto.");
+                errore = true;
+            }
+
+            catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
             }
+            finally
+            {
+                try
+                {
+                    if (errore == true)
+                    {
+                        Fs.Close();
+                        File.Delete(nomeFile);
+                    }
+                    netstream.Close();
+                    client.Close();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.ToString());
+                }
+            }
+
 
         }
         /********************/
