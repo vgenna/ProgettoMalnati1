@@ -26,6 +26,7 @@ namespace ProgettoMalnati1
     public partial class WinProgBar : Window
     {
         private Client c;
+        private bool error;
 
         public WinProgBar()
         {
@@ -38,9 +39,10 @@ namespace ProgettoMalnati1
             InitializeComponent();
 
             this.c = c;
+            error = false;
 
-            string nomefile = "test1newMb.db";
-
+            string nomefile = "test100Mb.db";
+            
             //QUESTO DOVRA' ESSERE FATTO NEL COSTRUTTORE DEL CLIENT, PERCHE' CI SARA' GIA' LI' IL PATH
             long length = new System.IO.FileInfo(nomefile).Length;
             c.nBytesTot = length * c.usersToShare.Count();
@@ -87,10 +89,11 @@ namespace ProgettoMalnati1
                 worker.ProgressChanged += worker_ProgressChanged;
                 worker.ReportProgress(-1, c.nBytesTot); //setto il valore che corrisponde al 100%
 
-                worker.RunWorkerCompleted += delegate
+                worker.RunWorkerCompleted += delegate //potrei levarlo e fare stampare "file Condiviso" solo appena esce dal for
                 {
-                    System.Windows.MessageBox.Show(string.Format("File {0} condiviso!", nomefile));
-                    //this.Close();
+                    if(!error)
+                        System.Windows.MessageBox.Show(string.Format("File {0} condiviso!", nomefile));
+                    this.Close();
                 };
                 worker.RunWorkerAsync(); //PARTE MA NON RITORNA PIù BOHHHH*/
                 //}
@@ -111,26 +114,27 @@ namespace ProgettoMalnati1
         {
             TcpClient client = null;
             NetworkStream netstream = null;
+            FileStream Fs = null;
             try
             {
                 client = new TcpClient(IP_addr, port_number);
                 netstream = client.GetStream();
-                int BufferSize = 1024 * 1024;/**dimensione del pacchetto inviato**/
+                int BufferSize = 1024;/**dimensione del pacchetto inviato**/
                 int sent = 0;
 
-                FileStream Fs = new FileStream(nome_file, FileMode.Open, FileAccess.Read);/**apro il file in lettura**/
+                Fs = new FileStream(nome_file, FileMode.Open, FileAccess.Read);/**apro il file in lettura**/
                 int packets_number = Convert.ToInt32(Math.Ceiling(Convert.ToDouble(Fs.Length) / Convert.ToDouble(BufferSize)));
                 /**il numero di pacchetti da inviare è pari alla grandezza totale del file diviso la 
             grandezza del buffer**/
 
                 int lunghezza_file = (int)Fs.Length, dim_pacchetto_corrente;
 
+                //invia nome del file
                 string stringInvio = nome_file + "*";
                 byte[] stringBytes = Encoding.ASCII.GetBytes(stringInvio);
                 netstream.Write(stringBytes, 0, nome_file.Length + 1);
-                System.Windows.MessageBox.Show(stringInvio);
 
-                for (int i = 0; i < packets_number; i++)
+                for (int i = 0; i < packets_number && !error; i++)
                 {
                     if (lunghezza_file > BufferSize)
                     {
@@ -149,8 +153,10 @@ namespace ProgettoMalnati1
                     //pBar.Value += (dim_pacchetto_corrente / nBytesTot) * 100;
                     sent = dim_pacchetto_corrente;
                     worker.ReportProgress(sent);
-
                 }
+                if(error)
+                    throw new Exception("Trasferimento interrotto!");
+
             }
             catch (Exception e)
 
@@ -159,9 +165,21 @@ namespace ProgettoMalnati1
             }
             finally
             {
-                netstream.Close();
+                this.Close(); //non esegue il codice dopo-->potremmo inviare la dimensione del file e fare il check dell'errore solo sul server
+                System.Windows.MessageBox.Show("Chiudendo coseeeee");
                 client.Close();
+                Fs.Close();       
+                netstream.Close();
             }
+        }
+
+        private void AbortButton_Click(object sender, RoutedEventArgs e)
+        {
+            //netstream.Close();
+            //client.Close();
+            //throw new Exception("Trasferimento interrotto!");
+            error = true;
+            //this.Close();
         }
     }
 }

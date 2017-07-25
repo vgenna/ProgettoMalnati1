@@ -25,6 +25,20 @@ namespace ProgettoMalnati1
         public MainWindow()
         {
             InitializeComponent();
+            startApp();
+        }
+
+        private void startApp()
+        {
+            clientButton.Visibility = Visibility.Hidden;
+            serverButton.Visibility = Visibility.Hidden;
+            button.Visibility = Visibility.Hidden;
+
+            //this.Close();
+
+            MessageBox.Show("WE");
+
+
         }
 
         private void button_Click(object sender, RoutedEventArgs e)

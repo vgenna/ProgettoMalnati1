@@ -79,7 +79,7 @@ namespace ProgettoMalnati1
                 MessageBox.Show("Server - Sent!");
                 sending_socket.Close();
             }
-            listener.Close();
+            listener.Close(); //QUANDO DEVE CHIUDERSI IL SERVER?
         }
 
         public static void receiveNewFile(TcpClient client)
@@ -118,9 +118,7 @@ namespace ProgettoMalnati1
                         nomeFile = nomeFile + tmp;
                     }
                 }
-                string serv = "Server:";
                 
-                /******/
                 while(File.Exists(nomeFile))
                 {
                     string s = null;
@@ -134,7 +132,7 @@ namespace ProgettoMalnati1
                     s += " - Copy." + words[words.Length - 1];
                     nomeFile = s;
                 }
-                /*******/
+
                 string SaveFileName = nomeFile;
                 if (SaveFileName != string.Empty)
                 {
