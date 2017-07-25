@@ -28,10 +28,11 @@ namespace ProgettoMalnati1
         public string filename;
         public long nBytesTot;
 
-        public Client()
+        public Client(string s)
         {
             otherUsers = new Dictionary<string, OtherUser>();
             usersToShare = new List<OtherUser>();
+            filename = s;
         }
 
         public void startBroadcastSocket()

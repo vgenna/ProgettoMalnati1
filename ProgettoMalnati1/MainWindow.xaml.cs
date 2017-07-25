@@ -14,6 +14,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 
 using System.Threading;
+using System.Diagnostics;
 
 namespace ProgettoMalnati1
 {
@@ -22,10 +23,13 @@ namespace ProgettoMalnati1
     /// </summary>
     public partial class MainWindow : Window
     {
+        string s;
         public MainWindow()
         {
             InitializeComponent();
-            startApp();
+            string[] args = Environment.GetCommandLineArgs();
+            s = args[1];
+            //startApp();  //commenta per eseguire la versione di test GESTIRE GLI ARGOMENTI SBAGLIATI
         }
 
         private void startApp()
@@ -36,9 +40,25 @@ namespace ProgettoMalnati1
 
             //this.Close();
 
-            MessageBox.Show("WE");
+            string[] args = Environment.GetCommandLineArgs();
 
+            if (args.Length > 1)
+            {
+                if (args[1] == "server")
+                {
+                    //codice server
+                    MessageBox.Show("Serverrrrrr");
+                    ServerRoutine();
+                }
 
+            }
+            else
+            {
+                Process.Start("ProgettoMalnati1.exe", "server");
+                //mettere in attesa dell'evento condividi
+                ClientRoutine();
+            }
+                
         }
 
         private void button_Click(object sender, RoutedEventArgs e)
@@ -46,34 +66,45 @@ namespace ProgettoMalnati1
 
             if (clientButton.IsChecked == true)
             {
-                Client c = new Client();
-                c.startBroadcastSocket();
-                WinOtherUsers winOU = new WinOtherUsers(c);           
-
-                foreach (OtherUser ou in c.otherUsers.Values)
-                {
-                    CheckBox cb = new CheckBox();
-                    cb.Name = ou.Name;
-                    cb.Content = ou.Name;
-                    winOU.stackP.Children.Add(cb);
-                }
-
-                winOU.Show();
-                this.Close();
-                //fine client
+                ClientRoutine();
             }
             else
             {
                 if (serverButton.IsChecked == true)
                 {
-                    /*Server s = new Server();
-                   
-                    s.startBroadcastSocket();
-                    
-                    s.receiveFileTCP(1500);*/
-                    Server s = new Server(2);
+
+                    ServerRoutine();
                 }
             }
+        }
+
+        public void ServerRoutine()
+        {
+            /*Server s = new Server();
+                   
+              s.startBroadcastSocket();
+                
+              s.receiveFileTCP(1500);*/
+            Server s = new Server(2);
+        }
+
+        public void ClientRoutine()
+        {
+            Client c = new Client(s);
+            c.startBroadcastSocket();
+            WinOtherUsers winOU = new WinOtherUsers(c);
+
+            foreach (OtherUser ou in c.otherUsers.Values)
+            {
+                CheckBox cb = new CheckBox();
+                cb.Name = ou.Name;
+                cb.Content = ou.Name;
+                winOU.stackP.Children.Add(cb);
+            }
+
+            winOU.Show();
+            this.Close();
+            //fine client
         }
     }
 }

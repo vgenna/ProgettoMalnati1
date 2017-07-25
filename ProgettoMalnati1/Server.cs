@@ -123,6 +123,8 @@ namespace ProgettoMalnati1
                     }
                 }
 
+                string[] fields = nomeFile.Split('\\'); //viene inviato il path assoluto del pc che sta inviando
+                nomeFile = fields[fields.Length - 1];
 
                 /******/
                 while (File.Exists(nomeFile))
@@ -139,6 +141,7 @@ namespace ProgettoMalnati1
                     nomeFile = s;
                 }
                 /*******/
+                //aggiungere "nuovaCartella\\" all'inizio del nome file per creare dentro cartella già esistente
                 string SaveFileName = nomeFile;
                 if (SaveFileName != string.Empty)
                 {
@@ -154,7 +157,7 @@ namespace ProgettoMalnati1
                     }
                     Fs.Close();
 
-                    MessageBox.Show(string.Format("Ricevuti '{0}'", nomeFile));
+                    MessageBox.Show(string.Format("Ricevuto '{0}'", nomeFile));
                 }
                 else
                 {
@@ -164,7 +167,7 @@ namespace ProgettoMalnati1
             }
             catch (IOException ex)
             {
-                MessageBox.Show("Trasferimento interrotto.");
+                MessageBox.Show("Trasferimento interrotto."+ex.ToString());
                 errore = true;
             }
 

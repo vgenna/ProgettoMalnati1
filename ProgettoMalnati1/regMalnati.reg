@@ -1,0 +1,4 @@
+Windows Registry Editor Version 5.00
+
+[HKEY_CLASSES_ROOT\*\shell\ProvaMalnati\command]
+@="\"C:\\Users\\Vincenzo\\Documents\\Visual Studio 2015\\Projects\\ProgettoMalnati1\\ProgettoMalnati1\\bin\\Release\\ProgettoMalnati1.exe\" \"%1\""

@@ -36,71 +36,79 @@ namespace ProgettoMalnati1
 
         public WinProgBar(Client c)
         {
-            InitializeComponent();
-
-            this.c = c;
-            error = false;
-
-            string nomefile = "test100Mb.db";
-            
-            //QUESTO DOVRA' ESSERE FATTO NEL COSTRUTTORE DEL CLIENT, PERCHE' CI SARA' GIA' LI' IL PATH
-            long length = new System.IO.FileInfo(nomefile).Length;
-            c.nBytesTot = length * c.usersToShare.Count();
-
-            this.Show();
-
-            foreach (OtherUser ou in c.usersToShare)
+            try
             {
-                //VEDERE COME SI FANNO I THREAD NEL WINOTHERUSERS NON MODIFICATO SU GITHUB E PROVARE A FARE 3-4 
-                //THREAD CHE AGGIORNANO LA STESSA PROGRESS BAR (CON JOIN ALLA FINE)
-                //this.Dispatcher.Invoke(DispatcherPriority.Normal, new Action(delegate ()
-                //{
-                //    this.progressBar.Value = 20; // Do all the ui thread updates here
-                //}));
+                InitializeComponent();
 
-                //Thread t = new Thread();
-                //t.Start();
+                this.c = c;
+                error = false;
 
-                /*Thread some_thread = new Thread(delegate ()
-                    {
+                string nomefile = c.filename;
+
+                //QUESTO DOVRA' ESSERE FATTO NEL COSTRUTTORE DEL CLIENT, PERCHE' CI SARA' GIA' LI' IL PATH
+                long length = new System.IO.FileInfo(nomefile).Length;
+                c.nBytesTot = length * c.usersToShare.Count();
+
+                this.Show();
+
+                foreach (OtherUser ou in c.usersToShare)
+                {
+                    //VEDERE COME SI FANNO I THREAD NEL WINOTHERUSERS NON MODIFICATO SU GITHUB E PROVARE A FARE 3-4 
+                    //THREAD CHE AGGIORNANO LA STESSA PROGRESS BAR (CON JOIN ALLA FINE)
+                    //this.Dispatcher.Invoke(DispatcherPriority.Normal, new Action(delegate ()
+                    //{
+                    //    this.progressBar.Value = 20; // Do all the ui thread updates here
+                    //}));
+
+                    //Thread t = new Thread();
+                    //t.Start();
+
+                    /*Thread some_thread = new Thread(delegate ()
                         {
-                            for (;;)
                             {
-                                System.Windows.Forms.Control.Invoke((MethodInvoker)delegate
+                                for (;;)
                                 {
-                                    sendFileTCP(ou.Address.ToString(), 1500, nomefile, worker);
-                                });
+                                    System.Windows.Forms.Control.Invoke((MethodInvoker)delegate
+                                    {
+                                        sendFileTCP(ou.Address.ToString(), 1500, nomefile, worker);
+                                    });
+                                }
                             }
-                        }
-                    });
-                some_thread.Start();*/
+                        });
+                    some_thread.Start();*/
 
 
 
-                //Action workAction = delegate
-                //{
-                BackgroundWorker worker = new BackgroundWorker();
-                worker.WorkerReportsProgress = true;
-                worker.DoWork += delegate
-                {
-                    sendFileTCP(ou.Address.ToString(), 1500, nomefile, worker);
-                };
+                    //Action workAction = delegate
+                    //{
+                    BackgroundWorker worker = new BackgroundWorker();
+                    worker.WorkerReportsProgress = true;
+                    worker.DoWork += delegate
+                    {
+                        sendFileTCP(ou.Address.ToString(), 1500, nomefile, worker);
+                    };
 
-                worker.ProgressChanged += worker_ProgressChanged;
-                worker.ReportProgress(-1, c.nBytesTot); //setto il valore che corrisponde al 100%
+                    worker.ProgressChanged += worker_ProgressChanged;
+                    worker.ReportProgress(-1, c.nBytesTot); //setto il valore che corrisponde al 100%
 
-                worker.RunWorkerCompleted += delegate //potrei levarlo e fare stampare "file Condiviso" solo appena esce dal for
-                {
-                    if(!error)
-                        System.Windows.MessageBox.Show(string.Format("File {0} condiviso!", nomefile));
-                    this.Close();
-                };
-                worker.RunWorkerAsync(); //PARTE MA NON RITORNA PIù BOHHHH*/
-                //}
+                    worker.RunWorkerCompleted += delegate //potrei levarlo e fare stampare "file Condiviso" solo appena esce dal for
+                    {
+                        if (!error)
+                            System.Windows.MessageBox.Show(string.Format("File {0} condiviso!", nomefile));
+                        this.Close();
+                    };
+                    worker.RunWorkerAsync(); //PARTE MA NON RITORNA PIù BOHHHH*/
+                                             //}
 
-                //Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Background, workAction);
+                    //Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Background, workAction);
+                }
+            }
+            catch (Exception e)
+            {
+                System.Windows.MessageBox.Show(e.ToString());
             }
         }
+
 
         private void worker_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
@@ -156,6 +164,12 @@ namespace ProgettoMalnati1
                 }
                 if(error)
                     throw new Exception("Trasferimento interrotto!");
+                else
+                {
+                    client.Close();
+                    Fs.Close();
+                    netstream.Close();
+                }
 
             }
             catch (Exception e)
