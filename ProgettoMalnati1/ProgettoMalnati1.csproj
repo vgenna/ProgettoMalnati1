@@ -60,6 +60,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="ImpostazioniPrimoAvvio.xaml.cs">
+      <DependentUpon>ImpostazioniPrimoAvvio.xaml</DependentUpon>
+    </Compile>
     <Compile Include="OtherUser.cs" />
     <Compile Include="Server.cs" />
     <Compile Include="WinOtherUsers.xaml.cs">
@@ -68,6 +71,10 @@
     <Compile Include="WinProgBar.xaml.cs">
       <DependentUpon>WinProgBar.xaml</DependentUpon>
     </Compile>
+    <Page Include="ImpostazioniPrimoAvvio.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

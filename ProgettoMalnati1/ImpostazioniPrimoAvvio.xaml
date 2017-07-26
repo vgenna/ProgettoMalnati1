@@ -1,0 +1,22 @@
+﻿<Window x:Class="ProgettoMalnati1.ImpostazioniPrimoAvvio"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ProgettoMalnati1"
+        mc:Ignorable="d"
+        Title="ImpostazioniPrimoAvvio" Height="300" Width="300">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="158*"/>
+            <ColumnDefinition Width="111*"/>
+            <ColumnDefinition Width="12*"/>
+            <ColumnDefinition Width="11*"/>
+            <ColumnDefinition Width="9*"/>
+        </Grid.ColumnDefinitions>
+        <RadioButton x:Name="pubbl" Content="Pubblica" HorizontalAlignment="Left" Margin="33,56,0,0" VerticalAlignment="Top" Height="15" Width="64" />
+        <RadioButton x:Name="priv" Content="Privata" Grid.Column="1" HorizontalAlignment="Left" Margin="28,56,0,0" VerticalAlignment="Top" Height="15" Width="56" />
+        <Button x:Name="button" Content="Conferma" HorizontalAlignment="Left" Margin="101,114,0,0" VerticalAlignment="Top" Width="76" RenderTransformOrigin="-0.287,0.275" Click="button_Click" Grid.ColumnSpan="2" Height="20"/>
+
+    </Grid>
+</Window>

@@ -28,7 +28,7 @@ namespace ProgettoMalnati1
         {
             InitializeComponent();
             string[] args = Environment.GetCommandLineArgs();
-            s = args[1];
+            //s = args[1];
             //startApp();  //commenta per eseguire la versione di test GESTIRE GLI ARGOMENTI SBAGLIATI
         }
 
@@ -85,7 +85,13 @@ namespace ProgettoMalnati1
               s.startBroadcastSocket();
                 
               s.receiveFileTCP(1500);*/
-            Server s = new Server(2);
+            //oSignalEvent = new ManualResetEvent(false);
+            ImpostazioniPrimoAvvio impostazioni = new ImpostazioniPrimoAvvio();
+            impostazioni.Show();//mostra finestra
+
+            //oSignalEvent.WaitOne(); //This thread will block here until the reset event is sent.
+            //oSignalEvent.Reset();
+            //Server s = new Server(2);
         }
 
         public void ClientRoutine()

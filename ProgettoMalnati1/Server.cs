@@ -20,10 +20,13 @@ namespace ProgettoMalnati1
 {
     public class Server
     {
+        public bool privato;//usata nella funzione statica del primo thread
+        //public ManualResetEvent oSignalEvent;
 
         public Server(int n)
         {
-            Thread thread_server = new Thread(Server.startBroadcastSocketStatic);
+            privato = false;//posso annunciarmi sulla rete come server
+            Thread thread_server = new Thread(/*Server.startBroadcastSocketStatic*/() => startBroadcastSocketStatic(privato));
             thread_server.Start();//ricezione e invio pacchetti UDP
             TcpListener Listener = null;
             try
@@ -35,6 +38,7 @@ namespace ProgettoMalnati1
             {
                 System.Windows.MessageBox.Show(ex.Message);
             }
+            
 
             for (;;)
             {
@@ -58,13 +62,15 @@ namespace ProgettoMalnati1
         }
 
         //prima funzione del thread
-        public static void startBroadcastSocketStatic()
+        public static void startBroadcastSocketStatic(bool pr)
         {
             UdpClient listener = new UdpClient(1500);
             IPEndPoint groupEP = new IPEndPoint(IPAddress.Any, 1500);
             string received_data;
             byte[] receive_byte_array;
 
+
+            MessageBox.Show(pr.ToString());
             while (true)
             {
                 receive_byte_array = listener.Receive(ref groupEP);
@@ -72,13 +78,21 @@ namespace ProgettoMalnati1
                 string formattedString = String.Format("Server - Received a broadcast from {0} , Received data: {1}", groupEP.ToString(), received_data);
                 MessageBox.Show(formattedString);
 
-                Socket sending_socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
-                IPAddress send_to_address = groupEP.Address;
-                IPEndPoint sending_end_point = new IPEndPoint(send_to_address, 1501);
-                sending_socket.SendTo(Encoding.ASCII.GetBytes("BuonFabio"), sending_end_point);
-                MessageBox.Show("Server - Sent!");
-                sending_socket.Close();
+                if (pr == false)
+                {
+                    MessageBox.Show("Modalità pubblica.");
+                    Socket sending_socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+                    IPAddress send_to_address = groupEP.Address;
+                    IPEndPoint sending_end_point = new IPEndPoint(send_to_address, 1501);
+                    sending_socket.SendTo(Encoding.ASCII.GetBytes("MariaAddolorata"), sending_end_point);
+                    MessageBox.Show("Server - Sent!");
+                    sending_socket.Close();
+                }
+                else
+                    MessageBox.Show("Modalità privata.");
             }
+            /*}
+            else*/
             listener.Close(); //QUANDO DEVE CHIUDERSI IL SERVER?
         }
 
@@ -125,7 +139,7 @@ namespace ProgettoMalnati1
 
                 string[] fields = nomeFile.Split('\\'); //viene inviato il path assoluto del pc che sta inviando
                 nomeFile = fields[fields.Length - 1];
-
+                //MessageBox.Show(nomeFile);
                 /******/
                 while (File.Exists(nomeFile))
                 {
@@ -143,6 +157,7 @@ namespace ProgettoMalnati1
                 /*******/
                 //aggiungere "nuovaCartella\\" all'inizio del nome file per creare dentro cartella già esistente
                 string SaveFileName = nomeFile;
+                MessageBox.Show(SaveFileName);
                 if (SaveFileName != string.Empty)
                 {
                     int totalrecbytes = 0;
@@ -167,7 +182,7 @@ namespace ProgettoMalnati1
             }
             catch (IOException ex)
             {
-                MessageBox.Show("Trasferimento interrotto."+ex.ToString());
+                MessageBox.Show("Trasferimento interrotto." + ex.ToString());
                 errore = true;
             }
 
@@ -213,7 +228,7 @@ namespace ProgettoMalnati1
             string formattedString = String.Format("Server - Received a broadcast from {0} , Received data: {1}", groupEP.ToString(), received_data);
             MessageBox.Show(formattedString);
 
-            Socket sending_socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram,ProtocolType.Udp);
+            Socket sending_socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
             IPAddress send_to_address = groupEP.Address;
             IPEndPoint sending_end_point = new IPEndPoint(send_to_address, 1501);
             sending_socket.SendTo(Encoding.ASCII.GetBytes("NINOzzp"), sending_end_point);
@@ -235,7 +250,7 @@ namespace ProgettoMalnati1
             {
                 System.Windows.MessageBox.Show(ex.Message);
             }
-            int BufferSize = 1024*1024;
+            int BufferSize = 1024 * 1024;
 
             byte[] RecData = new byte[BufferSize];
             int RecBytes;
@@ -257,10 +272,10 @@ namespace ProgettoMalnati1
                     {
                         client = Listener.AcceptTcpClient();
                         netstream = client.GetStream();
-                       
+
                         //file selection
                         string SaveFileName = "provaRic.txt";//string.Empty;
-                       
+
                         if (SaveFileName != string.Empty)
                         {
                             int totalrecbytes = 0;
