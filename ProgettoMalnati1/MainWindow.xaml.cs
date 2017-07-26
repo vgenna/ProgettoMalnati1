@@ -28,8 +28,8 @@ namespace ProgettoMalnati1
         {
             InitializeComponent();
             string[] args = Environment.GetCommandLineArgs();
-            //s = args[1];
-            //startApp();  //commenta per eseguire la versione di test GESTIRE GLI ARGOMENTI SBAGLIATI
+            startApp();  //commenta per eseguire la versione di test GESTIRE GLI ARGOMENTI SBAGLIATI
+            this.Close();
         }
 
         private void startApp()
@@ -42,24 +42,48 @@ namespace ProgettoMalnati1
 
             string[] args = Environment.GetCommandLineArgs();
 
-            if (args.Length > 1)
+            /*foreach (string arg in args)
+                MessageBox.Show(arg);
+            if (args.Length == 2)
+                Process.Start(args[0], "\""+args[1]+"\""+" server");*/
+            if (args.Length == 3)
             {
-                if (args[1] == "server")
+                //chiamato dalla condivisione del file
+                if (args[2] == "client")
                 {
-                    //codice server
-                    MessageBox.Show("Serverrrrrr");
-                    ServerRoutine();
+                    s = args[1];
+                    //MessageBox.Show("Apro il client: "+s);
+                    ClientRoutine();
                 }
-
+                else
+                {
+                    //ERRORE NELL'APPLICAZIONE
+                }
             }
             else
             {
-                Process.Start("ProgettoMalnati1.exe", "server");
-                //mettere in attesa dell'evento condividi
-                ClientRoutine();
+                if (args.Length == 1)
+                {
+                    //MessageBox.Show("Apro il server");
+                    Process.Start(args[0], "server");
+                }
+
+                else
+                {
+                    if (args.Length == 2)
+                    {
+                        if (args[1] == "server")
+                        {
+                            //MessageBox.Show("Lancio il server");
+                            ServerRoutine(); //chiede il settaggio delle impostazioni
+                        }
+                    }
+
+                }
             }
-                
+
         }
+
 
         private void button_Click(object sender, RoutedEventArgs e)
         {
