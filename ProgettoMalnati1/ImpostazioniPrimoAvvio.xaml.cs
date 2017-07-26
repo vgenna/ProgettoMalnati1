@@ -39,7 +39,7 @@ namespace ProgettoMalnati1
                 //s.privato = true;
             }
             //this.Close();
-
+            this.Close();
             Server s = new Server(2);
             
             //s.oSignalEvent.Set();

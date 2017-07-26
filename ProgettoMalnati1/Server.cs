@@ -84,7 +84,7 @@ namespace ProgettoMalnati1
                     Socket sending_socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
                     IPAddress send_to_address = groupEP.Address;
                     IPEndPoint sending_end_point = new IPEndPoint(send_to_address, 1501);
-                    sending_socket.SendTo(Encoding.ASCII.GetBytes("MariaAddolorata"), sending_end_point);
+                    sending_socket.SendTo(Encoding.ASCII.GetBytes("Mariano"), sending_end_point);
                     MessageBox.Show("Server - Sent!");
                     sending_socket.Close();
                 }
