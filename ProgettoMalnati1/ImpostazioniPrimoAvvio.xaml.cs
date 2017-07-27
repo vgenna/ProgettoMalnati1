@@ -7,6 +7,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
+using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -20,27 +21,38 @@ namespace ProgettoMalnati1
     public partial class ImpostazioniPrimoAvvio : Window
     {
         //Server s;
+        bool privato;
         public ImpostazioniPrimoAvvio()
         {
             InitializeComponent();
+            privato = false;
             //s = myServer;
         }
 
       
         private void button_Click(object sender, RoutedEventArgs e)
-        {
-            MessageBox.Show("cliccato");  
+        { 
             if(pubbl.IsChecked == true)
             {
-                //s.privato = false;
+                privato = false;
             }
             else if(priv.IsChecked == true)
             {
-                //s.privato = true;
+                privato = true;
             }
             //this.Close();
+
             this.Close();
-            Server s = new Server(2);
+
+            string selectedPath = null;
+            var dialog = new FolderBrowserDialog();
+            dialog.Description = "Scegli percorso in cui salvare il file: ";
+            DialogResult result = dialog.ShowDialog();
+            selectedPath = dialog.SelectedPath;
+
+            //System.Windows.MessageBox.Show("Il percorso è: "+selectedPath);
+
+            Server s = new Server(privato, selectedPath);
             
             //s.oSignalEvent.Set();
         }

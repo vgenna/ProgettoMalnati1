@@ -21,12 +21,14 @@ namespace ProgettoMalnati1
     public class Server
     {
         public bool privato;//usata nella funzione statica del primo thread
+        public string savePath;
         //public ManualResetEvent oSignalEvent;
 
-        public Server(int n)
+        public Server(bool privato, string savePath)
         {
-            privato = false;//posso annunciarmi sulla rete come server
-            Thread thread_server = new Thread(/*Server.startBroadcastSocketStatic*/() => startBroadcastSocketStatic(privato));
+            this.privato = privato;//posso annunciarmi sulla rete come server
+            this.savePath = savePath;
+            Thread thread_server = new Thread(/*Server.startBroadcastSocketStatic*/() => startBroadcastSocketStatic(this.privato));
             thread_server.Start();//ricezione e invio pacchetti UDP
             TcpListener Listener = null;
             try
@@ -49,8 +51,18 @@ namespace ProgettoMalnati1
                     if (Listener.Pending())
                     {
                         client = Listener.AcceptTcpClient();
-                        //thread dopo ogni accept
-                        Thread thread_invio = new Thread(() => receiveNewFile(client));
+
+                        //string message = "Accept the Incoming File ";
+                        //string caption = "Incoming Connection";
+                        //MessageBoxButtons buttons = MessageBoxButtons.YesNo;
+                        //DialogResult result;
+                        //result = MessageBox.Show(message, caption, buttons);
+                        // if (result == System.Windows.Forms.DialogResult.Yes) {}
+                        
+
+
+                            //thread dopo ogni accept
+                            Thread thread_invio = new Thread(() => receiveNewFile(client, this.savePath));
                         thread_invio.Start();
                     }
                 }
@@ -70,7 +82,6 @@ namespace ProgettoMalnati1
             byte[] receive_byte_array;
 
 
-            MessageBox.Show(pr.ToString());
             while (true)
             {
                 receive_byte_array = listener.Receive(ref groupEP);
@@ -91,12 +102,11 @@ namespace ProgettoMalnati1
                 else
                     MessageBox.Show("Modalità privata.");
             }
-            /*}
-            else*/
+            
             listener.Close(); //QUANDO DEVE CHIUDERSI IL SERVER?
         }
 
-        public static void receiveNewFile(TcpClient client)
+        public static void receiveNewFile(TcpClient client, string savePath)
         {
             /*********/
             NetworkStream netstream = null;
@@ -139,6 +149,8 @@ namespace ProgettoMalnati1
 
                 string[] fields = nomeFile.Split('\\'); //viene inviato il path assoluto del pc che sta inviando
                 nomeFile = fields[fields.Length - 1];
+
+                nomeFile = savePath + "\\" + nomeFile;
                 //MessageBox.Show(nomeFile);
                 /******/
                 while (File.Exists(nomeFile))
@@ -157,7 +169,7 @@ namespace ProgettoMalnati1
                 /*******/
                 //aggiungere "nuovaCartella\\" all'inizio del nome file per creare dentro cartella già esistente
                 string SaveFileName = nomeFile;
-                MessageBox.Show(SaveFileName);
+                //MessageBox.Show(SaveFileName);
                 if (SaveFileName != string.Empty)
                 {
                     int totalrecbytes = 0;
@@ -236,82 +248,7 @@ namespace ProgettoMalnati1
             sending_socket.Close();
             listener.Close();
         }
-
-        public void receiveFileTCP(int portN)
-        {
-
-            TcpListener Listener = null;
-            try
-            {
-                Listener = new TcpListener(IPAddress.Any, portN);
-                Listener.Start();
-            }
-            catch (Exception ex)
-            {
-                System.Windows.MessageBox.Show(ex.Message);
-            }
-            int BufferSize = 1024 * 1024;
-
-            byte[] RecData = new byte[BufferSize];
-            int RecBytes;
-            for (;;)
-            {
-                TcpClient client = null;
-                NetworkStream netstream = null;
-                string Status = string.Empty;
-
-                try
-                {
-                    //string message = "Accept the Incoming File ";
-                    //string caption = "Incoming Connection";
-                    // MessageBoxButtons buttons = MessageBoxButtons.YesNo;
-                    //DialogResult result;
-
-
-                    if (Listener.Pending())
-                    {
-                        client = Listener.AcceptTcpClient();
-                        netstream = client.GetStream();
-
-                        //file selection
-                        string SaveFileName = "provaRic.txt";//string.Empty;
-
-                        if (SaveFileName != string.Empty)
-                        {
-                            int totalrecbytes = 0;
-                            FileStream Fs = new FileStream(SaveFileName, FileMode.OpenOrCreate, FileAccess.Write);
-                            while ((RecBytes = netstream.Read(RecData, 0, RecData.Length)) > 0)
-                            {
-                                Fs.Write(RecData, 0, RecBytes);
-                                totalrecbytes += RecBytes;
-                                //string s = string.Format("Ricevuti {0} byte", totalrecbytes);
-                                //MessageBox.Show(s);
-                            }
-                            Fs.Close();
-                            MessageBox.Show("File ricevuto!");
-
-                        }
-                        else
-                        {
-                            string s = string.Format("File non trovato.");
-                            System.Windows.MessageBox.Show(s);
-                        }
-
-
-                        netstream.Close();
-                        client.Close();
-                    }
-                }
-                catch (Exception e) { MessageBox.Show(e.Message); }
-
-            }
-
-
-        }
-
-
     }
-
 }
 
 
