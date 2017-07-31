@@ -222,6 +222,11 @@ namespace ProgettoMalnati1
 
 
         }
+        /********************/
+        public Server()
+        {
+
+        }
 
         public void startBroadcastSocket()
         {

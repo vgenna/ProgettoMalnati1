@@ -40,18 +40,21 @@ namespace ProgettoMalnati1
             {
                 privato = true;
             }
+            //this.Close();
 
             this.Close();
 
             string selectedPath = null;
             var dialog = new FolderBrowserDialog();
-            dialog.Description = "Scegli percorso in cui salvare i file: ";
+            dialog.Description = "Scegli percorso in cui salvare il file: ";
             DialogResult result = dialog.ShowDialog();
             selectedPath = dialog.SelectedPath;
 
             //System.Windows.MessageBox.Show("Il percorso è: "+selectedPath);
 
-            Server s = new Server(privato, selectedPath); //forse nel costruttore conviene inizializzare solo i campi e poi fare un metodo tipo s.Start() per fare eseguire tutto il codice del server
+            Server s = new Server(privato, selectedPath);
+            
+            //s.oSignalEvent.Set();
         }
 
        

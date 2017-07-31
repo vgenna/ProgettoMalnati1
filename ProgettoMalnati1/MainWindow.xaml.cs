@@ -27,15 +27,16 @@ namespace ProgettoMalnati1
         public MainWindow()
         {
             InitializeComponent();
-            startApp();  //commenta per eseguire la versione di test
+            string[] args = Environment.GetCommandLineArgs();
+            startApp();  //commenta per eseguire la versione di test GESTIRE GLI ARGOMENTI SBAGLIATI
             this.Close();
         }
 
         private void startApp()
         {
-            //clientButton.Visibility = Visibility.Hidden;
-            //serverButton.Visibility = Visibility.Hidden;
-            //button.Visibility = Visibility.Hidden;
+            clientButton.Visibility = Visibility.Hidden;
+            serverButton.Visibility = Visibility.Hidden;
+            button.Visibility = Visibility.Hidden;
 
             //this.Close();
 
@@ -45,53 +46,42 @@ namespace ProgettoMalnati1
                 MessageBox.Show(arg);
             if (args.Length == 2)
                 Process.Start(args[0], "\""+args[1]+"\""+" server");*/
-            try
+            if (args.Length == 3)
             {
-                if (args.Length == 3)
+                //chiamato dalla condivisione del file
+                if (args[2] == "client")
                 {
-                    //chiamato dalla condivisione del file (file o cartella su cui ha fatto clic dx passato come args[1])
-                    if (args[2] == "client")
-                    {
-                        s = args[1];
-                        //MessageBox.Show("Apro il client: "+s);
-                        ClientRoutine();
-                    }
-                    else
-                    {
-                        //ERRORE NELL'APPLICAZIONE
-                        throw new Exception("Errore inatteso nell'applicazione (argomenti errati)");
-                    }
+                    s = args[1];
+                    //MessageBox.Show("Apro il client: "+s);
+                    ClientRoutine();
                 }
                 else
                 {
-                    if (args.Length == 1)
-                    {
-                        //sta lanciando l'applicazione per la prima volta, devo aprire solo il server
+                    //ERRORE NELL'APPLICAZIONE
+                }
+            }
+            else
+            {
+                if (args.Length == 1)
+                {
+                    //MessageBox.Show("Apro il server");
+                    Process.Start(args[0], "server");
+                }
 
-                        //MessageBox.Show("Apro il server");
-                        Process.Start(args[0], "server");
-                    }
-                    else
+                else
+                {
+                    if (args.Length == 2)
                     {
-                        if (args.Length == 2)
+                        if (args[1] == "server")
                         {
-                            if (args[1] == "server")
-                            {
-                                //MessageBox.Show("Lancio il server");
-                                ServerRoutine(); //chiede il settaggio delle impostazioni
-                            }
-                            else
-                            {
-                                //errore nell'applicazione
-                                throw new Exception("Errore inatteso nell'applicazione (argomenti errati)");
-                            }
+                            //MessageBox.Show("Lancio il server");
+                            ServerRoutine(); //chiede il settaggio delle impostazioni
                         }
                     }
+
                 }
-            } catch (Exception e)
-            {
-                MessageBox.Show(e.Message);
             }
+
         }
 
 
