@@ -46,7 +46,7 @@ namespace ProgettoMalnati1
                 string nomefile = c.filename;
 
                 //QUESTO DOVRA' ESSERE FATTO NEL COSTRUTTORE DEL CLIENT, PERCHE' CI SARA' GIA' LI' IL PATH
-                long length = new System.IO.FileInfo(nomefile).Length;
+                long length = new FileInfo(nomefile).Length;
                 c.nBytesTot = length * c.usersToShare.Count();
 
                 this.Show();
@@ -97,7 +97,7 @@ namespace ProgettoMalnati1
                             System.Windows.MessageBox.Show(string.Format("File {0} condiviso!", nomefile));
                         this.Close();
                     };
-                    worker.RunWorkerAsync(); //PARTE MA NON RITORNA PIù BOHHHH*/
+                    worker.RunWorkerAsync(); 
                                              //}
 
                     //Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Background, workAction);
