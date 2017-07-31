@@ -5,18 +5,25 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ProgettoMalnati1"
         mc:Ignorable="d"
-        Title="ImpostazioniPrimoAvvio" Height="300" Width="300">
-    <Grid>
+        Title="ImpostazioniPrimoAvvio" Height="400" Width="350">
+    <Grid Margin="0,0,0,-53">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="158*"/>
-            <ColumnDefinition Width="111*"/>
+            <ColumnDefinition Width="116*"/>
+            <ColumnDefinition Width="37*"/>
+            <ColumnDefinition Width="108*"/>
             <ColumnDefinition Width="12*"/>
-            <ColumnDefinition Width="11*"/>
+            <ColumnDefinition Width="10*"/>
             <ColumnDefinition Width="9*"/>
         </Grid.ColumnDefinitions>
         <RadioButton x:Name="pubbl" Content="Pubblica" HorizontalAlignment="Left" Margin="33,56,0,0" VerticalAlignment="Top" Height="15" Width="64" />
-        <RadioButton x:Name="priv" Content="Privata" Grid.Column="1" HorizontalAlignment="Left" Margin="28,56,0,0" VerticalAlignment="Top" Height="15" Width="56" />
-        <Button x:Name="button" Content="Conferma" HorizontalAlignment="Left" Margin="101,114,0,0" VerticalAlignment="Top" Width="76" RenderTransformOrigin="-0.287,0.275" Click="button_Click" Grid.ColumnSpan="2" Height="20"/>
+        <RadioButton x:Name="priv" Content="Privata" Grid.Column="2" HorizontalAlignment="Left" Margin="28,56,0,0" VerticalAlignment="Top" Height="15" Width="56" />
+        <Button x:Name="button" Content="Conferma" HorizontalAlignment="Left" Margin="98,294,0,0" VerticalAlignment="Top" Width="76" RenderTransformOrigin="-0.287,0.275" Click="button_Click" Height="20" Grid.ColumnSpan="3"/>
+        <Label x:Name="label" Content="Nome utente:" HorizontalAlignment="Left" Margin="33,110,0,0" VerticalAlignment="Top" Width="89" Grid.ColumnSpan="2"/>
+        <TextBox x:Name="nomeUtente" Grid.Column="2" HorizontalAlignment="Left" Height="23" Margin="10,110,0,0" TextWrapping="Wrap" Text="Utente" VerticalAlignment="Top" Width="88" TextChanged="textBox_TextChanged" />
+        <Label x:Name="label1" Content="Conferma ricezione:" HorizontalAlignment="Left" Margin="33,179,0,0" VerticalAlignment="Top" Width="120" Grid.ColumnSpan="2"/>
+        <CheckBox x:Name="conf" Content="Conferma" Grid.Column="2" HorizontalAlignment="Left" Margin="26,185,0,0" VerticalAlignment="Top"/>
+        <CheckBox x:Name="confPath" Content="Defaul path" Grid.Column="2" HorizontalAlignment="Left" Margin="28,236,0,0" VerticalAlignment="Top" Checked="checkBox_Checked"/>
+        <Label x:Name="label2" Content="Path:" HorizontalAlignment="Left" Margin="33,236,0,0" VerticalAlignment="Top" Width="103"/>
 
     </Grid>
 </Window>

@@ -42,21 +42,61 @@ namespace ProgettoMalnati1
             }
             //this.Close();
 
+            //leggo nome utente
+            string nome = nomeUtente.Text;
+            string[] words= System.Text.RegularExpressions.Regex.Split(nome, @"\s+");
+
+            if(words.Length == 0 || words[0] == "")
+            {
+                //terminiamo il processo ???????????????????? -> concordare con Enzo
+                System.Windows.Forms.MessageBox.Show("INSERISCI NOME UTENTE.");
+                return;
+            }
+            nome = null;
+            for(int i=0; i<words.Length; i++)
+            {
+                nome = nome + words[i];
+            }
+            System.Windows.Forms.MessageBox.Show("----> " + nome);
+
+            //controllo che sia stata spuntata la casella di conferma ricezione
+            bool conferma = false;
+            if (conf.IsChecked == true)
+            {
+                conferma = true;
+            }
+            else
+                conferma = false;
+            /*******************/
             this.Close();
 
             string selectedPath = null;
-            var dialog = new FolderBrowserDialog();
-            dialog.Description = "Scegli percorso in cui salvare il file: ";
-            DialogResult result = dialog.ShowDialog();
-            selectedPath = dialog.SelectedPath;
-
+            if (confPath.IsChecked == false)
+            {
+                var dialog = new FolderBrowserDialog();
+                dialog.Description = "Scegli percorso in cui salvare il file: ";
+                DialogResult result = dialog.ShowDialog();
+                selectedPath = dialog.SelectedPath;
+            }
+            else
+            {
+                //il path sarà quello dell'eseguibile 
+            }
             //System.Windows.MessageBox.Show("Il percorso è: "+selectedPath);
 
-            Server s = new Server(privato, selectedPath);
+            Server s = new Server(privato, selectedPath, nome, conferma);
             
             //s.oSignalEvent.Set();
         }
 
-       
+        private void textBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+
+        }
+
+        private void checkBox_Checked(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 }
