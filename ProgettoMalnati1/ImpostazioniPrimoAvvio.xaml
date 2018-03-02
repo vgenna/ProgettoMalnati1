@@ -22,7 +22,7 @@
         <TextBox x:Name="nomeUtente" Grid.Column="2" HorizontalAlignment="Left" Height="23" Margin="10,110,0,0" TextWrapping="Wrap" Text="Utente" VerticalAlignment="Top" Width="88" TextChanged="textBox_TextChanged" />
         <Label x:Name="label1" Content="Conferma ricezione:" HorizontalAlignment="Left" Margin="33,179,0,0" VerticalAlignment="Top" Width="120" Grid.ColumnSpan="2"/>
         <CheckBox x:Name="conf" Content="Conferma" Grid.Column="2" HorizontalAlignment="Left" Margin="26,185,0,0" VerticalAlignment="Top"/>
-        <CheckBox x:Name="confPath" Content="Defaul path" Grid.Column="2" HorizontalAlignment="Left" Margin="28,236,0,0" VerticalAlignment="Top" Checked="checkBox_Checked"/>
+        <CheckBox x:Name="confPath" Content="Default path" Grid.Column="2" HorizontalAlignment="Left" Margin="28,236,0,0" VerticalAlignment="Top" Checked="checkBox_Checked"/>
         <Label x:Name="label2" Content="Path:" HorizontalAlignment="Left" Margin="33,236,0,0" VerticalAlignment="Top" Width="103"/>
 
     </Grid>
