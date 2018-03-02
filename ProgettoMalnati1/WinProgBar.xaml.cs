@@ -115,7 +115,11 @@ namespace ProgettoMalnati1
             if (e.ProgressPercentage == -1)
                 pBar.Maximum = Convert.ToInt32(e.UserState);
             else
+            {
                 pBar.Value += e.ProgressPercentage;
+            }
+                
+
         }
 
         public void sendFileTCP(string IP_addr, Int32 port_number, string nome_file, BackgroundWorker worker)
@@ -123,6 +127,7 @@ namespace ProgettoMalnati1
             TcpClient client = null;
             NetworkStream netstream = null;
             FileStream Fs = null;
+            int timeLeft, amountLeft, amountProcessed=0, timeTaken, preTransferTime, postTransferTime;
             try
             {
                 client = new TcpClient(IP_addr, port_number);
@@ -148,6 +153,7 @@ namespace ProgettoMalnati1
 
                 for (int i = 0; i < packets_number && !error; i++)
                 {
+                    preTransferTime = System.Environment.TickCount;
                     if (lunghezza_file > BufferSize)
                     {
                         dim_pacchetto_corrente = BufferSize;
@@ -159,12 +165,19 @@ namespace ProgettoMalnati1
                     byte[] SendingBuffer = new byte[dim_pacchetto_corrente];
                     Fs.Read(SendingBuffer, 0, dim_pacchetto_corrente);
                     netstream.Write(SendingBuffer, 0, (int)SendingBuffer.Length);
+                    postTransferTime = System.Environment.TickCount;
 
                     //aggiorno la progressBar con il numero dei byte inviati
                     //pBar.Dispatcher.BeginInvoke((Action)delegate { pBar.Value += (dim_pacchetto_corrente / nBytesTot) * 100; }); // Invoke esegue sullo stesso thread (sincrono)
                     //pBar.Value += (dim_pacchetto_corrente / nBytesTot) * 100;
                     sent = dim_pacchetto_corrente;
                     worker.ReportProgress(sent);
+
+                    amountLeft = lunghezza_file;
+                    amountProcessed += dim_pacchetto_corrente;
+                    timeTaken = postTransferTime - preTransferTime;
+                    timeLeft = (timeTaken / amountProcessed) * amountLeft;
+                    this.textBox.Text = "Time Left: " + timeLeft + "ms"; //PROBLEMA TEXTBOX POSSEDUTO DA ALTRO THREAD
                 }
                 if(error)
                     throw new Exception("Trasferimento interrotto!");
