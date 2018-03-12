@@ -91,11 +91,10 @@ namespace ProgettoMalnati1
                     worker.ProgressChanged += worker_ProgressChanged;
                     worker.ReportProgress(-1, c.nBytesTot); //setto il valore che corrisponde al 100%
 
-                    worker.RunWorkerCompleted += delegate //potrei levarlo e fare stampare "file Condiviso" solo appena esce dal for
+                   worker.RunWorkerCompleted += delegate //potrei levarlo e fare stampare "file Condiviso" solo appena esce dal for
                     {
-                        if (!error)
-                            System.Windows.MessageBox.Show(string.Format("File {0} condiviso!", nomefile));
                         this.Close();
+                        System.Windows.MessageBox.Show(string.Format("File {0} condiviso!", nomefile));
                     };
                     worker.RunWorkerAsync(); 
                                              //}
@@ -117,6 +116,7 @@ namespace ProgettoMalnati1
             else
             {
                 pBar.Value += e.ProgressPercentage;
+                textBox.Text = "Time Left: " + e.UserState + "ms";
             }
                 
 
@@ -127,9 +127,11 @@ namespace ProgettoMalnati1
             TcpClient client = null;
             NetworkStream netstream = null;
             FileStream Fs = null;
-            int timeLeft, amountLeft, amountProcessed=0, timeTaken, preTransferTime, postTransferTime;
+            
             try
             {
+                double timeLeft, lastSpeed, averageSpeed=0;
+                int amountLeft, amountProcessed = 0, timeTaken = 0, preTransferTime, postTransferTime;
                 client = new TcpClient(IP_addr, port_number);
                 netstream = client.GetStream();
                 //int BufferSize = 1024*1024;/**dimensione del pacchetto inviato**/
@@ -145,7 +147,6 @@ namespace ProgettoMalnati1
             grandezza del buffer**/
 
                 int lunghezza_file = (int)Fs.Length, dim_pacchetto_corrente;
-
                 //invia nome del file
                 string stringInvio = nome_file + "*";
                 byte[] stringBytes = Encoding.ASCII.GetBytes(stringInvio);
@@ -167,17 +168,20 @@ namespace ProgettoMalnati1
                     netstream.Write(SendingBuffer, 0, (int)SendingBuffer.Length);
                     postTransferTime = System.Environment.TickCount;
 
-                    //aggiorno la progressBar con il numero dei byte inviati
-                    //pBar.Dispatcher.BeginInvoke((Action)delegate { pBar.Value += (dim_pacchetto_corrente / nBytesTot) * 100; }); // Invoke esegue sullo stesso thread (sincrono)
-                    //pBar.Value += (dim_pacchetto_corrente / nBytesTot) * 100;
                     sent = dim_pacchetto_corrente;
-                    worker.ReportProgress(sent);
-
                     amountLeft = lunghezza_file;
-                    amountProcessed += dim_pacchetto_corrente;
+                    amountProcessed += dim_pacchetto_corrente;                  
                     timeTaken = postTransferTime - preTransferTime;
-                    timeLeft = (timeTaken / amountProcessed) * amountLeft;
-                    this.textBox.Text = "Time Left: " + timeLeft + "ms"; //PROBLEMA TEXTBOX POSSEDUTO DA ALTRO THREAD
+
+                    if (timeTaken == 0) timeTaken = 16; 
+                    lastSpeed = dim_pacchetto_corrente / timeTaken;
+                    if (averageSpeed == 0)
+                        averageSpeed = lastSpeed;
+
+                    averageSpeed = (float)(0.005 * lastSpeed + (1 - 0.005) * averageSpeed);
+                    timeLeft = Math.Ceiling(amountLeft / averageSpeed);
+
+                    worker.ReportProgress(sent, timeLeft);
                 }
                 if(error)
                     throw new Exception("Trasferimento interrotto!");
