@@ -135,7 +135,7 @@ namespace ProgettoMalnati1
                 client = new TcpClient(IP_addr, port_number);
                 netstream = client.GetStream();
                 //int BufferSize = 1024*1024;/**dimensione del pacchetto inviato**/
-                int BufferSize = (int) new FileInfo(nome_file).Length/100; //problema per invii >400GB(int non contiene un numero >4miliardi)
+                int BufferSize = (int) new FileInfo(nome_file).Length/50; //problema per invii >400GB(int non contiene un numero >4miliardi)
                 if (BufferSize < 100)
                     BufferSize = 100;
 
