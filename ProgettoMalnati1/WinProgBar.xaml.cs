@@ -17,6 +17,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using System.Windows.Threading;
+using System.IO.Compression;          
 
 namespace ProgettoMalnati1
 {
@@ -45,6 +46,28 @@ namespace ProgettoMalnati1
 
                 string nomefile = c.filename;
 
+                int flagDirectory = 0;//indica se una nuova directory.zip e' stata creata, in questo caso vale 1
+                if (Directory.Exists(c.filename))
+                {
+
+                    System.Windows.MessageBox.Show("Invio di una cartella");
+                    nomefile = c.filename + ".zip";//nomefile sara' la stringa ottenuta dallo zip
+                    /*
+                     *compressione della cartella con creazione della directory e poi successiva eliminazione altrimenti non puo' essere reinviata
+                     */
+
+                    /*elimino un eventuale file .zip avente lo stesso nome della cartella che devo comprimere e inviare altrimenti 
+                      ci sarà una eccezione; questi file possono essere presenti dopo aver fatto abort */
+                    /* si può mettere la delete anche nel IF error == true della sendFileTCP*/
+                    if (File.Exists(nomefile))
+                        File.Delete(nomefile);
+
+                    ZipFile.CreateFromDirectory(c.filename, nomefile);
+                    flagDirectory = 1;
+                }
+
+
+
                 //QUESTO DOVRA' ESSERE FATTO NEL COSTRUTTORE DEL CLIENT, PERCHE' CI SARA' GIA' LI' IL PATH
                 long length = new FileInfo(nomefile).Length;
                 c.nBytesTot = length * c.usersToShare.Count();
@@ -53,39 +76,14 @@ namespace ProgettoMalnati1
 
                 foreach (OtherUser ou in c.usersToShare)
                 {
-                    //VEDERE COME SI FANNO I THREAD NEL WINOTHERUSERS NON MODIFICATO SU GITHUB E PROVARE A FARE 3-4 
-                    //THREAD CHE AGGIORNANO LA STESSA PROGRESS BAR (CON JOIN ALLA FINE)
-                    //this.Dispatcher.Invoke(DispatcherPriority.Normal, new Action(delegate ()
-                    //{
-                    //    this.progressBar.Value = 20; // Do all the ui thread updates here
-                    //}));
-
-                    //Thread t = new Thread();
-                    //t.Start();
-
-                    /*Thread some_thread = new Thread(delegate ()
-                        {
-                            {
-                                for (;;)
-                                {
-                                    System.Windows.Forms.Control.Invoke((MethodInvoker)delegate
-                                    {
-                                        sendFileTCP(ou.Address.ToString(), 1500, nomefile, worker);
-                                    });
-                                }
-                            }
-                        });
-                    some_thread.Start();*/
-
-
-
+                    
                     //Action workAction = delegate
                     //{
                     BackgroundWorker worker = new BackgroundWorker();
                     worker.WorkerReportsProgress = true;
                     worker.DoWork += delegate
                     {
-                        sendFileTCP(ou.Address.ToString(), 1500, nomefile, worker);
+                        sendFileTCP(ou.Address.ToString(), 1500, nomefile, worker, flagDirectory);
                     };
 
                     worker.ProgressChanged += worker_ProgressChanged;
@@ -122,7 +120,7 @@ namespace ProgettoMalnati1
 
         }
 
-        public void sendFileTCP(string IP_addr, Int32 port_number, string nome_file, BackgroundWorker worker)
+        public void sendFileTCP(string IP_addr, Int32 port_number, string nome_file, BackgroundWorker worker, int flagDirectory)
         {
             TcpClient client = null;
             NetworkStream netstream = null;
@@ -130,6 +128,7 @@ namespace ProgettoMalnati1
             
             try
             {
+                System.Windows.MessageBox.Show("Invio di una FILE");
                 double timeLeft, lastSpeed, averageSpeed=0;
                 int amountLeft, amountProcessed = 0, timeTaken = 0, preTransferTime, postTransferTime;
                 client = new TcpClient(IP_addr, port_number);
@@ -147,6 +146,16 @@ namespace ProgettoMalnati1
             grandezza del buffer**/
 
                 int lunghezza_file = (int)Fs.Length, dim_pacchetto_corrente;
+
+                //invio il valore del flagDirectory per far capire al server se deve decomprimere lo zip
+                string f_d = "";
+                if (flagDirectory == 0)
+                    f_d = "zero*";
+                else
+                    f_d = "uno*";
+                byte[] stringFlagDirectory = Encoding.ASCII.GetBytes(f_d);
+                netstream.Write(stringFlagDirectory, 0, (int)f_d.Length);
+
                 //invia nome del file
                 string stringInvio = nome_file + "*";
                 byte[] stringBytes = Encoding.ASCII.GetBytes(stringInvio);
@@ -200,6 +209,10 @@ namespace ProgettoMalnati1
             }
             finally
             {
+                //cancello il file compresso ottenuto dalla cartella da inviare a prescindere dal fatto che abbia fatto abort
+                if (flagDirectory == 1 && File.Exists(nome_file))
+                    File.Delete(nome_file);
+
                 this.Close(); //non esegue il codice dopo-->potremmo inviare la dimensione del file e fare il check dell'errore solo sul server
                 System.Windows.MessageBox.Show("Chiudendo coseeeee");
                 client.Close();

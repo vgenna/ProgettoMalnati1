@@ -15,6 +15,9 @@ using NetworkCommsDotNet;
 using NetworkCommsDotNet.Connections.UDP;
 using NetworkCommsDotNet.Connections;
 using System.Windows.Forms;
+using System.IO.Compression; 
+using System.Drawing;             
+
 
 namespace ProgettoMalnati1
 {
@@ -23,6 +26,13 @@ namespace ProgettoMalnati1
         public bool privato, conferma;//usata nella funzione statica del primo thread
         public string savePath, nomeUtente;
         //public ManualResetEvent oSignalEvent;
+        NotifyIcon myIcon;
+        System.Windows.Forms.ContextMenu myMenu;
+        System.Windows.Forms.MenuItem myMenuItem;
+        System.Windows.Forms.MenuItem myMenuItem2;
+        public static string choosenPath = null;
+        public static bool confRic = false; public static bool defaultPath;
+
 
         public Server(bool privato, string savePath, string nomeUtente, bool conferma)
         {
@@ -30,6 +40,46 @@ namespace ProgettoMalnati1
             this.savePath = savePath;
             this.nomeUtente = nomeUtente;
             this.conferma = conferma;
+
+            bool defaultPath = false;
+
+            /*******CREAZIONE ICONA NELLA TASKBAR******/
+            //nel server per gestire la variabile bool "privato"
+            Thread notifyThread = new Thread(
+               delegate ()
+               {
+
+                   myMenu = new System.Windows.Forms.ContextMenu();
+                   myMenuItem = new System.Windows.Forms.MenuItem("Impostazioni di condivisione");
+                   myMenu.MenuItems.Add(0, myMenuItem);
+
+                   if (privato == false)
+                       myMenuItem2 = new System.Windows.Forms.MenuItem("Stato: online");
+                   else
+                       myMenuItem2 = new System.Windows.Forms.MenuItem("Stato: offline");
+                   myMenu.MenuItems.Add(1, myMenuItem2);
+
+                   myIcon = new NotifyIcon()
+                   {
+                       Icon = new Icon(AppDomain.CurrentDomain.BaseDirectory + "\\immagineIcona.ico"),
+                       ContextMenu = myMenu,
+                       Text = "AppMalnati"
+                   };
+                   if (this.savePath.Equals(AppDomain.CurrentDomain.BaseDirectory))
+                       defaultPath = true;
+                   myMenuItem.Click += new EventHandler((s2, e2) => ChangeProperties(s2, e2, this.conferma, defaultPath, this.nomeUtente, this.savePath));
+
+
+                   myIcon.Visible = true;
+                   System.Windows.Forms.Application.Run();
+               }
+            );
+
+
+            notifyThread.Start();
+            /********************************************/
+
+
             Thread thread_server = new Thread(/*Server.startBroadcastSocketStatic*/() => startBroadcastSocketStatic(this.privato, this.nomeUtente));
             thread_server.Start();//ricezione e invio pacchetti UDP
             TcpListener Listener = null;
@@ -75,6 +125,47 @@ namespace ProgettoMalnati1
 
         }
 
+        //funziona associata al click della prima voce del menu dell'icona nella task bar
+        private void ChangeProperties(object s, EventArgs e, bool confRic2, bool defaultPath2, string nomeU, string choosenPath2)
+        {
+            //metodo associato al click della voce "Impostazioni di condivisione"
+            //finestra con le impostazioni attuali e possibilità di cambiare lo stato
+            try
+            {
+                //nome utente, conferma di ricezione, default path
+                string confRicezione = null;
+                string defPath = null;
+
+                if (confRic2 == true)
+                    confRicezione = "conferma di ricezione impostata";
+                else
+                    confRicezione = "conferma di ricezione NON impostata";
+
+                if (defaultPath2 == false)
+                    defPath = "percorso di salvataggio SCELTO dall'utente -> " + choosenPath2;
+                else
+                    defPath = "percorso di salvataggio di default -> " + choosenPath2;
+                var confirmResult = System.Windows.Forms.MessageBox.Show("Nome: " + nomeU + "\n\n" + "Conferma di ricezione: " + confRicezione +
+                    "\n\n" + "Default path: " + defPath + "\n\n" + "Vuoi cambiare il tuo stato ?", "Impostazioni di condivisione", MessageBoxButtons.YesNo);
+
+                /**if (confirmResult == DialogResult.Yes)
+                {
+                    //cambio della variabile "privato"
+                    if( privato == false)
+                        privato = true;
+                    else
+                        privato = false;
+                }**/
+                //se cambio stato allora modifico
+            }
+            catch (Exception ex)
+            {
+                System.Windows.MessageBox.Show(ex.Message + "\n problema thread");
+            }
+
+        }
+
+
         //prima funzione del thread
         public static void startBroadcastSocketStatic(bool pr, string nomeUtente)
         {
@@ -115,6 +206,12 @@ namespace ProgettoMalnati1
             string nomeFile = null;
             bool errore = false;
             FileStream Fs = null;
+
+            string f_d = null; //riceverà "zero" o "uno"
+            string st = null;
+
+
+
             /*if (conferma == true)
             {*/
             /*var confirmResult = System.Windows.Forms.MessageBox.Show("Are you sure to receive file ??",
@@ -139,11 +236,35 @@ namespace ProgettoMalnati1
 
                 //file selection
                 /*****/
-                //ricevo nome file fino all'asterisco ma prima richiedo conferma di ricezione
+                //ricevo flagDirectory e nome file fino all'asterisco ma prima richiedo conferma di ricezione
 
 
 
                 byte[] RecData_2 = new byte[1];
+
+
+                byte[] RecData_3 = new byte[1];
+
+                //string f_d = null; //riceverà "zero" o "uno"
+                while ((RecBytes = netstream.Read(RecData_3, 0, 1)) > 0)
+                {
+                    string tmp = System.Text.Encoding.UTF8.GetString(RecData_3);
+                    if (tmp.CompareTo("*") == 0)
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        f_d = f_d + tmp;
+                    }
+
+                }
+                System.Windows.MessageBox.Show(f_d);
+                if (f_d.Equals("uno"))
+                    System.Windows.MessageBox.Show("Ho ricevuto una cartella.");
+                else
+                    System.Windows.MessageBox.Show("Ho ricevuto un file.");
+
 
 
                 while ((RecBytes = netstream.Read(RecData_2, 0, 1)) > 0)
@@ -205,6 +326,22 @@ namespace ProgettoMalnati1
                             }
                             Fs.Close();
 
+                            //effettuo l'eventuale decompressione
+                            if (f_d.Equals("uno"))
+                            {
+
+                                string[] w = SaveFileName.Split('.');
+                                st = w[0];//nome del file escluso .zip
+                                while (Directory.Exists(st))//cerco una cartella con stesso nome e non il file
+                                {
+                                    st = st + "-Copy";
+                                }
+                                ZipFile.ExtractToDirectory(nomeFile, st);
+                                //elimino il .zip
+                                File.Delete(SaveFileName);
+                            }
+
+
                             System.Windows.MessageBox.Show(string.Format("Ricevuto '{0}'", nomeFile));
                         }
                         else
@@ -228,7 +365,22 @@ namespace ProgettoMalnati1
                         }
                         Fs.Close();
 
+                        //effettuo l'eventuale decompressione
+                        if (f_d.Equals("uno"))
+                        {
+                            string[] w = SaveFileName.Split('.');
+                            st = w[0];//nome del file escluso .zip
+                            while (Directory.Exists(st))//cerco una cartella con stesso nome e non il file
+                            {
+                                st = st + "-Copy";
+                            }
+                            ZipFile.ExtractToDirectory(nomeFile, st);
+                            //elimino il .zip
+                            File.Delete(SaveFileName);
+                        }
+
                         System.Windows.MessageBox.Show(string.Format("Ricevuto '{0}'", nomeFile));
+
                     }
 
 
@@ -256,7 +408,12 @@ namespace ProgettoMalnati1
                     if (errore == true)
                     {
                         Fs.Close();
-                        File.Delete(nomeFile);
+                        if (File.Exists(nomeFile))
+                            File.Delete(nomeFile);//se il nomeFile esiste (un file qualsiasi, può essere anche lo zip)
+                        //se ho ricevuto una cartella f_d == 1 elimino anche la cartella creata ---> Directory.Delete(nome della cartella creata in st) se esiste
+                        if (f_d.Equals("uno") && Directory.Exists(st))
+                            Directory.Delete(st);
+
                     }
                     netstream.Close();
                     client.Close();
@@ -275,119 +432,7 @@ namespace ProgettoMalnati1
                 System.Windows.MessageBox.Show("Hai rifiutato la ricezione del file.");
             }*/
         }
-        /*else if (conferma == false)//ricevo normalmente
-        {   try
-            {
-                int BufferSize = 1024 * 1024;
-
-                byte[] RecData = new byte[BufferSize];
-                int RecBytes;
-                //NetworkStream netstream = null;
-                string Status = string.Empty;
-
-
-                netstream = client.GetStream();//passare il client
-                Status = "Connected to a client\n";
-                //result = System.Windows.MessageBox.Show(message, caption, buttons);
-
-                //file selection
-
-                //ricevo nome file fino all'asterisco ma prima richiedo conferma di ricezione
-
-
-
-                byte[] RecData_2 = new byte[1];
-
-
-                while ((RecBytes = netstream.Read(RecData_2, 0, 1)) > 0)
-                {
-                    string tmp = System.Text.Encoding.UTF8.GetString(RecData_2);
-                    if (tmp.CompareTo("*") == 0)
-                    {
-                        //nomeFile = nomeFile;
-                        break;
-                    }
-                    else
-                    {
-                        nomeFile = nomeFile + tmp;
-                    }
-                }
-
-                string[] fields = nomeFile.Split('\\'); //viene inviato il path assoluto del pc che sta inviando
-                nomeFile = fields[fields.Length - 1];
-
-                nomeFile = savePath + "\\" + nomeFile;
-                //MessageBox.Show(nomeFile);
-
-                while (File.Exists(nomeFile))
-                {
-                    string s = null;
-                    String[] words = nomeFile.Split('.');
-                    s = words[0];
-                    for (int i = 1; i < words.Length - 1; i++)
-                    {
-
-                        s = s + "." + words[i];
-                    }
-                    s += " - Copy." + words[words.Length - 1];
-                    nomeFile = s;
-                }
-
-                //aggiungere "nuovaCartella\\" all'inizio del nome file per creare dentro cartella già esistente
-                string SaveFileName = nomeFile;
-                //MessageBox.Show(SaveFileName);
-                if (SaveFileName != string.Empty)
-                {
-                    int totalrecbytes = 0;
-                    Fs = new FileStream(SaveFileName, FileMode.OpenOrCreate, FileAccess.Write);
-
-                    while ((RecBytes = netstream.Read(RecData, 0, RecData.Length)) > 0)
-                    {
-                        Fs.Write(RecData, 0, RecBytes);
-                        totalrecbytes += RecBytes;
-                        //string s = string.Format("Ricevuti {0} byte", totalrecbytes);
-                        //MessageBox.Show(s);
-                    }
-                    Fs.Close();
-
-                    System.Windows.MessageBox.Show(string.Format("Ricevuto '{0}'", nomeFile));
-                }
-                else
-                {
-                    string s = string.Format("File non trovato.");
-                    System.Windows.MessageBox.Show(s);
-                }
-            }
-            catch (IOException ex)
-            {
-                System.Windows.MessageBox.Show("Trasferimento interrotto." + ex.ToString());
-                errore = true;
-            }
-
-            catch (Exception ex)
-            {
-                System.Windows.MessageBox.Show(ex.Message);
-            }
-            finally
-            {
-                try
-                {
-                    if (errore == true)
-                    {
-                        Fs.Close();
-                        File.Delete(nomeFile);
-                    }
-                    netstream.Close();
-                    client.Close();
-                }
-                catch (Exception ex)
-                {
-                    System.Windows.MessageBox.Show(ex.ToString());
-                }
-            }
-    }
-
-    }*/
+        
         /********************/
         public Server()
         {
