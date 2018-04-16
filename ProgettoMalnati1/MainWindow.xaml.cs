@@ -137,6 +137,8 @@ namespace ProgettoMalnati1
             foreach (OtherUser ou in c.otherUsers.Values)
             {
                 CheckBox cb = new CheckBox();
+                Style style = this.FindResource("myCheckboxStyle") as Style;
+                cb.Style = style;
                 cb.Name = ou.Name;
                 cb.Content = ou.Name;
                 winOU.stackP.Children.Add(cb);

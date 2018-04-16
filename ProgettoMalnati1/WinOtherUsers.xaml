@@ -10,5 +10,34 @@
         <StackPanel Name="stackP" HorizontalAlignment="Left" Height="202" Margin="10,31,0,0" VerticalAlignment="Top" Width="272"/>
         <TextBlock x:Name="titleWinOU" HorizontalAlignment="Left" Margin="35,10,0,0" TextWrapping="Wrap" Text="Seleziona gli utenti con cui condividere" VerticalAlignment="Top" Width="209"/>
         <Button x:Name="condividiButton" Content="Condividi" HorizontalAlignment="Left" Margin="109,238,0,0" VerticalAlignment="Top" Width="75" Click="condividiButton_Click"/>
+        
     </Grid>
+
+    <Window.Resources>
+        <Style TargetType="{x:Type CheckBox}" x:Key="myCheckboxStyle">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type CheckBox}">
+                        <StackPanel Orientation="Horizontal">
+                            <Image x:Name="checkboxImage" Source="/Resource/unchecked.png" Width="32"/>
+                            <ContentPresenter/>
+                        </StackPanel>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="checkboxImage" Property="Source" Value="/Resource/checked.png"/>
+                            </Trigger>
+                            <MultiTrigger>
+                                <MultiTrigger.Conditions>
+                                    <Condition Property="IsMouseOver" Value="True"/>
+                                    <Condition Property="IsChecked" Value="False"/>
+                                </MultiTrigger.Conditions>
+                                <Setter TargetName="checkboxImage" Property="Source" Value="/Resource/hover.png"/>
+                            </MultiTrigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+    
 </Window>
