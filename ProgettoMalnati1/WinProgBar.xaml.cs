@@ -110,7 +110,7 @@ namespace ProgettoMalnati1
         private void worker_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
             if (e.ProgressPercentage == -1)
-                pBar.Maximum = Convert.ToInt32(e.UserState);
+                pBar.Maximum = Convert.ToInt64(e.UserState);
             else
             {
                 pBar.Value += e.ProgressPercentage;

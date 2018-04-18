@@ -23,7 +23,8 @@ namespace ProgettoMalnati1
 {
     public class Server
     {
-        public bool privato, conferma;//usata nella funzione statica del primo thread
+        private volatile bool privato;
+        public bool conferma;//usata nella funzione statica del primo thread
         public string savePath, nomeUtente;
         //public ManualResetEvent oSignalEvent;
         NotifyIcon myIcon;
@@ -32,6 +33,14 @@ namespace ProgettoMalnati1
         System.Windows.Forms.MenuItem myMenuItem2;
         public static string choosenPath = null;
         public static bool confRic = false; public static bool defaultPath;
+        Thread notifyThread;
+        //a seguire ttto ciò che e' usato per la seconda icona nella task bar
+        Thread notifyThread_;
+        NotifyIcon myIcon_;
+        System.Windows.Forms.ContextMenu myMenu_;
+        System.Windows.Forms.MenuItem myMenuItem_;
+        System.Windows.Forms.MenuItem myMenuItem2_;
+
 
 
         public Server(bool privato, string savePath, string nomeUtente, bool conferma)
@@ -45,7 +54,7 @@ namespace ProgettoMalnati1
 
             /*******CREAZIONE ICONA NELLA TASKBAR******/
             //nel server per gestire la variabile bool "privato"
-            Thread notifyThread = new Thread(
+            notifyThread = new Thread(
                delegate ()
                {
 
@@ -77,6 +86,39 @@ namespace ProgettoMalnati1
 
 
             notifyThread.Start();
+
+            // CREARE UN NUOVO THREAD ASSOCIATO ALLA SECONDA ICONA MA FARLA PARTIRE CON VISIBLE=FALSE
+            notifyThread_ = new Thread(
+               delegate ()
+               {
+                   myMenu_ = new System.Windows.Forms.ContextMenu();
+                   myMenuItem_ = new System.Windows.Forms.MenuItem("Impostazioni di condivisione");
+                   myMenu_.MenuItems.Add(0, myMenuItem_);
+
+                   if (privato == false)
+                       myMenuItem2_ = new System.Windows.Forms.MenuItem("Stato: offline");
+                   else
+                       myMenuItem2_ = new System.Windows.Forms.MenuItem("Stato: online");
+                   myMenu_.MenuItems.Add(1, myMenuItem2_);
+
+                   myIcon_ = new NotifyIcon()
+                   {
+                       Icon = new Icon(AppDomain.CurrentDomain.BaseDirectory + "\\immagineIcona.ico"),
+                       ContextMenu = myMenu_,
+                       Text = "AppMalnati"
+                   };
+
+                   if (this.savePath.Equals(AppDomain.CurrentDomain.BaseDirectory))
+                       defaultPath = true;
+                   myMenuItem_.Click += new EventHandler((s2, e2) => ChangeProperties(s2, e2, this.conferma, defaultPath, this.nomeUtente, this.savePath));
+
+                   myIcon_.Visible = false;
+                   System.Windows.Forms.Application.Run();
+               }
+            );
+
+            notifyThread_.Start();
+
             /********************************************/
 
 
@@ -148,15 +190,46 @@ namespace ProgettoMalnati1
                 var confirmResult = System.Windows.Forms.MessageBox.Show("Nome: " + nomeU + "\n\n" + "Conferma di ricezione: " + confRicezione +
                     "\n\n" + "Default path: " + defPath + "\n\n" + "Vuoi cambiare il tuo stato ?", "Impostazioni di condivisione", MessageBoxButtons.YesNo);
 
-                /**if (confirmResult == DialogResult.Yes)
+               
+                //se cambio stato allora modifico il valore di this.privato
+                if (confirmResult == DialogResult.Yes)
                 {
+                    //SE VISIBLE DELLA PRIMA ICONA = FALSE ALLORA LO METTO A TRUE E LA SECONDA ICONA A FALSE
+                    //ALTRIMENTI SE VISIBLE DELLA PRIMA ICONA = TRUE ALLORA LA METTO A FALSE E LA SECONDA LA METTO A TRUE 
+
                     //cambio della variabile "privato"
-                    if( privato == false)
-                        privato = true;
+                    if (privato == false)
+                    {
+                        this.privato = true;
+                        if (myIcon.Visible == true)
+                        {
+                            myIcon.Visible = false;
+                            myIcon_.Visible = true;
+                        }
+                        else if (myIcon_.Visible == true)
+                        {
+                            myIcon_.Visible = false;
+                            myIcon.Visible = true;
+                        }
+
+                    }
                     else
-                        privato = false;
-                }**/
-                //se cambio stato allora modifico
+                    {
+                        this.privato = false;
+                        if (myIcon.Visible == true)
+                        {
+                            myIcon.Visible = false;
+                            myIcon_.Visible = true;
+                        }
+                        else if (myIcon_.Visible == true)
+                        {
+                            myIcon_.Visible = false;
+                            myIcon.Visible = true;
+                        }
+                    }
+                }
+
+               
             }
             catch (Exception ex)
             {
@@ -167,7 +240,7 @@ namespace ProgettoMalnati1
 
 
         //prima funzione del thread
-        public static void startBroadcastSocketStatic(bool pr, string nomeUtente)
+        public void startBroadcastSocketStatic(bool pr, string nomeUtente)
         {
             UdpClient listener = new UdpClient(1500);
             IPEndPoint groupEP = new IPEndPoint(IPAddress.Any, 1500);
@@ -182,7 +255,7 @@ namespace ProgettoMalnati1
                 string formattedString = String.Format("Server - Received a broadcast from {0} , Received data: {1}", groupEP.ToString(), received_data);
                 System.Windows.Forms.MessageBox.Show(formattedString);
 
-                if (pr == false)
+                if (this.privato == false)
                 {
                     System.Windows.Forms.MessageBox.Show("Modalità pubblica.");
                     Socket sending_socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
