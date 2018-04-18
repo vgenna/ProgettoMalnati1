@@ -38,7 +38,7 @@ namespace ProgettoMalnati1
 
         private void condividiButton_Click(object sender, RoutedEventArgs e)
         {
-
+            int nUtenti = 0;
             //qui devo selezionare quelli a cui voglio inviare e devo metterli nella lista (usersToShare)
             foreach (UIElement child in stackP.Children)
             {
@@ -48,13 +48,20 @@ namespace ProgettoMalnati1
                     if (childCB.IsChecked == true)
                     {
                         c.usersToShare.Add(c.otherUsers[childCB.Name]);
+                        nUtenti++;
                     }
                 }
             }
 
-            WinProgBar winPB = new WinProgBar(c);
-
-            this.Close();
+            if (nUtenti>0)
+            {
+                WinProgBar winPB = new WinProgBar(c);
+                this.Close();
+            }
+            else
+            {
+                MessageBox.Show("Asino seleziona un utente");
+            }        
         }
 
     }
