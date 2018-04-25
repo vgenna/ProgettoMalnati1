@@ -267,7 +267,7 @@ namespace ProgettoMalnati1
 
                     var imageToSend = Image.FromFile(image.AbsolutePath);
                     MemoryStream ms = new MemoryStream();
-                    imageToSend.Save(ms, System.Drawing.Imaging.ImageFormat.Gif);
+                    imageToSend.Save(ms, System.Drawing.Imaging.ImageFormat.Jpeg);
                     var msA = ms.ToArray();
                     sending_socket.SendTo(msA, sending_end_point);
 

@@ -13,6 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
+using System.IO;
 using System.Threading;
 using System.Diagnostics;
 
@@ -157,22 +158,31 @@ namespace ProgettoMalnati1
             winOU.stackP.Children.Add(p);*/
             
 
-            Image im2 = new Image();
-            im2.Height = 96.00;
-            im2.Width = 96.00;
-            var uriSource2 = new Uri(AppDomain.CurrentDomain.BaseDirectory + "\\utente.ico");
-            im2.Source = new BitmapImage(uriSource2);
+            
+            
             //im2.Stretch = System.Windows.Media.Stretch.None;
             
             /******************stop****************/
             foreach (OtherUser ou in c.otherUsers.Values)
             {
-
-                
                 CheckBox cb = new CheckBox();
                 Style style = this.FindResource("myCheckboxStyle") as Style;
                 cb.Style = style;
                 cb.Name = ou.Name;
+
+                var memory = new MemoryStream();
+                ou.Image.Save(memory, System.Drawing.Imaging.ImageFormat.Jpeg);
+                memory.Position = 0;
+                var bitmapImage = new BitmapImage();
+                bitmapImage.BeginInit();
+                bitmapImage.StreamSource = memory;
+                bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
+                bitmapImage.EndInit();
+                Image im2 = new Image();
+                im2.Height = 96.00;
+                im2.Width = 96.00;
+                im2.Source = bitmapImage;
+
                 //cb.Content = ou.Name;
                 //creo il pannello che conterrà immagine e nome dell'utente
                 WrapPanel p = new WrapPanel();
