@@ -68,8 +68,39 @@ namespace ProgettoMalnati1
                         byte[] receive_byte_array;
 
                         receive_byte_array = client.Receive(ref otherEP);
-                        nomeU = Encoding.ASCII.GetString(receive_byte_array, 0, receive_byte_array.Length); //ma fino all'asterisco
-                        bytes_image = ......;
+                        /****/
+                        String nome = null;
+                        byte[] bytes_image = null;
+                        int lungNome = 0, flag = 0;
+                        foreach (byte b in receive_byte_array)
+                        {
+                            string c = Convert.ToString(b);
+
+                            if (flag == 0 && c.Equals("*") == false)
+                            {
+                                lungNome++;
+                                nome = nome + c;
+                            }
+                            else if (flag == 1)
+                            {
+                                //concateno nell'array di byte
+                                byte[] newArray = new byte[bytes_image.Length + 1];
+                                bytes_image.CopyTo(newArray, 1);
+                                newArray[0] = b;
+                                bytes_image = newArray;
+                            }
+
+                            if (c.Equals("*"))
+                            {
+                                //receive_byte_array.Length - (lungNome + 1) sarà la dimensione dell'immagine
+                                flag = 1;
+                            }
+
+                        }
+                        /******************/
+                        nomeU = nome;
+                        //nomeU = Encoding.ASCII.GetString(receive_byte_array, 0, receive_byte_array.Length); //ma fino all'asterisco
+
 
                         MemoryStream ms = new MemoryStream(bytes_image);
                         var returnImage = System.Drawing.Image.FromStream(ms);
@@ -81,6 +112,7 @@ namespace ProgettoMalnati1
                         //MessageBox.Show("Timeout expired!");
                         timeout = true;
                     }
+
                 }
                 //qui dovrei avere la lista con tutti i vari (IP,nome) di quelli che hanno risposto al messaggio udp entro 2 secondi
 
