@@ -263,8 +263,9 @@ namespace ProgettoMalnati1
                     Socket sending_socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
                     IPAddress send_to_address = groupEP.Address;
                     IPEndPoint sending_end_point = new IPEndPoint(send_to_address, 1501);
-                    sending_socket.SendTo(Encoding.ASCII.GetBytes(nomeUtente+"*"), sending_end_point);
+                    sending_socket.SendTo(Encoding.ASCII.GetBytes(nomeUtente), sending_end_point);
 
+                    System.Windows.Forms.MessageBox.Show(image.AbsolutePath);
                     var imageToSend = Image.FromFile(image.AbsolutePath);
                     MemoryStream ms = new MemoryStream();
                     imageToSend.Save(ms, System.Drawing.Imaging.ImageFormat.Jpeg);
