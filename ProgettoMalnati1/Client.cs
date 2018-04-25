@@ -64,13 +64,17 @@ namespace ProgettoMalnati1
                     try
                     {
                         IPEndPoint otherEP = null; //verrà popolato al Receive()
-                        string received_data;
+                        string nomeU;
                         byte[] receive_byte_array;
 
                         receive_byte_array = client.Receive(ref otherEP);
-                        received_data = Encoding.ASCII.GetString(receive_byte_array, 0, receive_byte_array.Length);
-                        
-                        otherUsers.Add(received_data, new OtherUser(otherEP.Address, received_data)); //GESTIRE CASO DI CHIAVE UGUALE  
+                        nomeU = Encoding.ASCII.GetString(receive_byte_array, 0, receive_byte_array.Length); //ma fino all'asterisco
+                        bytes_image = ......;
+
+                        MemoryStream ms = new MemoryStream(bytes_image);
+                        var returnImage = System.Drawing.Image.FromStream(ms);
+
+                        otherUsers.Add(nomeU, new OtherUser(otherEP.Address, nomeU, returnImage)); //GESTIRE CASO DI CHIAVE UGUALE  
                     }
                     catch (SocketException)
                     {
@@ -97,54 +101,6 @@ namespace ProgettoMalnati1
             string broadcast = fields[0] + "." + fields[1] + "." + fields[2] + ".255";
 
             return broadcast;
-        }
-
-        public void sendFileTCP(string IP_addr, Int32 port_number, string nome_file, ProgressBar pBar)
-        {
-            TcpClient client = null;
-            NetworkStream netstream = null;
-            try
-            {
-                client = new TcpClient(IP_addr, port_number);
-                netstream = client.GetStream();
-                int BufferSize = 1024;/**dimensione del pacchetto inviato**/
-
-                FileStream Fs = new FileStream(nome_file, FileMode.Open, FileAccess.Read);/**apro il file in lettura**/
-                int packets_number = Convert.ToInt32(Math.Ceiling(Convert.ToDouble(Fs.Length) / Convert.ToDouble(BufferSize)));
-                /**il numero di pacchetti da inviare è pari alla grandezza totale del file diviso la 
-            grandezza del buffer**/
-
-                int lunghezza_file = (int)Fs.Length, dim_pacchetto_corrente;
-
-                for (int i = 0; i < packets_number; i++)
-                {
-                    if (lunghezza_file > BufferSize)
-                    {
-                        dim_pacchetto_corrente = BufferSize;
-                        lunghezza_file = lunghezza_file - dim_pacchetto_corrente;
-                    }
-                    else
-                        dim_pacchetto_corrente = lunghezza_file;
-
-                    byte[] SendingBuffer = new byte[dim_pacchetto_corrente];
-                    Fs.Read(SendingBuffer, 0, dim_pacchetto_corrente);
-                    netstream.Write(SendingBuffer, 0, (int)SendingBuffer.Length);
-
-                    //aggiorno la progressBar con il numero dei byte inviati
-                    //pBar.Dispatcher.BeginInvoke((Action)delegate { pBar.Value += (dim_pacchetto_corrente / nBytesTot) * 100; }); // Invoke esegue sullo stesso thread (sincrono)
-                    pBar.Value += (dim_pacchetto_corrente / nBytesTot) * 100;
-                }
-            }
-            catch (Exception e)
-
-            {
-                MessageBox.Show(e.Message);
-            }
-            finally
-            {
-                netstream.Close();
-                client.Close();
-            }
         }
 
    private static string GetLocalIPAddress() {

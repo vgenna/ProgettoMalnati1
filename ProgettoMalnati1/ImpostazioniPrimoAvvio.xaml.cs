@@ -149,7 +149,7 @@ namespace ProgettoMalnati1
 
                 this.Close();
 
-                Server s = new Server(privato, selectedPath, nome, conferma); 
+                Server s = new Server(privato, selectedPath, nome, conferma, image); 
 
                 //s.oSignalEvent.Set();
             }

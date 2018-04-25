@@ -26,6 +26,7 @@ namespace ProgettoMalnati1
         private volatile bool privato;
         public bool conferma;//usata nella funzione statica del primo thread
         public string savePath, nomeUtente;
+        public Uri image;
         //public ManualResetEvent oSignalEvent;
         NotifyIcon myIcon;
         System.Windows.Forms.ContextMenu myMenu;
@@ -43,12 +44,13 @@ namespace ProgettoMalnati1
 
 
 
-        public Server(bool privato, string savePath, string nomeUtente, bool conferma)
+        public Server(bool privato, string savePath, string nomeUtente, bool conferma, Uri image)
         {
             this.privato = privato;//posso annunciarmi sulla rete come server
             this.savePath = savePath;
             this.nomeUtente = nomeUtente;
             this.conferma = conferma;
+            this.image = image;
 
             bool defaultPath = false;
 
@@ -261,7 +263,14 @@ namespace ProgettoMalnati1
                     Socket sending_socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
                     IPAddress send_to_address = groupEP.Address;
                     IPEndPoint sending_end_point = new IPEndPoint(send_to_address, 1501);
-                    sending_socket.SendTo(Encoding.ASCII.GetBytes(nomeUtente), sending_end_point);
+                    sending_socket.SendTo(Encoding.ASCII.GetBytes(nomeUtente+"*"), sending_end_point);
+
+                    var imageToSend = Image.FromFile(image.AbsolutePath);
+                    MemoryStream ms = new MemoryStream();
+                    imageToSend.Save(ms, System.Drawing.Imaging.ImageFormat.Gif);
+                    var msA = ms.ToArray();
+                    sending_socket.SendTo(msA, sending_end_point);
+
                     System.Windows.Forms.MessageBox.Show("Server - Sent!");
                     sending_socket.Close();
                 }
