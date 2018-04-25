@@ -64,5 +64,9 @@ namespace ProgettoMalnati1
             }        
         }
 
+        private void scrollBar_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+
+        }
     }
 }

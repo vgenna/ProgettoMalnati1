@@ -134,15 +134,89 @@ namespace ProgettoMalnati1
             c.startBroadcastSocket();
             WinOtherUsers winOU = new WinOtherUsers(c);
 
+            /****************start******************/
+            /*WrapPanel p = new WrapPanel();
+            p.VerticalAlignment = VerticalAlignment.Top;
+            p.Margin = new Thickness(7.0, 7.0, 7.0, 0);
+            p.Width = 290;
+            p.Height = 290;
+            p.Background = Brushes.White;
+            p.Orientation = Orientation.Vertical;
+
+            for (var i = 0; i < 3; i++)
+            {
+                p.Children.Add(new Rectangle
+                {
+                    Width = 100,
+                    Height = 20,
+                    StrokeThickness = 1,
+                    Stroke = new SolidColorBrush(Colors.Black),
+                    Margin = new Thickness(5)
+                });
+            }
+            winOU.stackP.Children.Add(p);*/
+            
+
+            Image im2 = new Image();
+            im2.Height = 96.00;
+            im2.Width = 96.00;
+            var uriSource2 = new Uri(AppDomain.CurrentDomain.BaseDirectory + "\\utente.ico");
+            im2.Source = new BitmapImage(uriSource2);
+            //im2.Stretch = System.Windows.Media.Stretch.None;
+            
+            /******************stop****************/
             foreach (OtherUser ou in c.otherUsers.Values)
             {
+
+                
                 CheckBox cb = new CheckBox();
                 Style style = this.FindResource("myCheckboxStyle") as Style;
                 cb.Style = style;
                 cb.Name = ou.Name;
-                cb.Content = ou.Name;
+                //cb.Content = ou.Name;
+                //creo il pannello che conterrà immagine e nome dell'utente
+                WrapPanel p = new WrapPanel();
+                p.VerticalAlignment = VerticalAlignment.Top;
+                p.Margin = new Thickness(7.0, 7.0, 7.0, 0);
+                p.Width = 290;
+                p.Height = 290;
+                p.Background = Brushes.Aqua;
+                p.Orientation = Orientation.Vertical;
+                TextBlock tb = new TextBlock();
+                tb.Text = ou.Name;
+                p.Children.Add(tb);
+                p.Children.Add(im2);
+                ////////////////////////////////////////////////////////////
+                cb.Content = p;//cb.Content = im2;
                 winOU.stackP.Children.Add(cb);
-            }
+           }
+            Image im3 = new Image();
+            im3.Height = 96.00;
+            im3.Width = 96.00;
+            var uriSource3 = new Uri(AppDomain.CurrentDomain.BaseDirectory + "\\utente.ico");
+            im3.Source = new BitmapImage(uriSource3);
+            //im3.Stretch = System.Windows.Media.Stretch.None;
+            for (var i = 0; i<1; i++)
+           {
+                CheckBox cb = new CheckBox();
+                Style style = this.FindResource("myCheckboxStyle") as Style;
+                cb.Style = style;
+                //cb.Content = ou.Name;
+                //creo il pannello che conterrà immagine e nome dell'utente
+                WrapPanel p = new WrapPanel();
+                p.VerticalAlignment = VerticalAlignment.Top;
+                p.Margin = new Thickness(7.0, 7.0, 7.0, 0);
+                p.Width = 290;
+                p.Height = 290;
+                p.Background = Brushes.Aqua;
+                p.Orientation = Orientation.Vertical;
+                TextBlock tb = new TextBlock();
+                tb.Text = "secondo utente";//ou.Name;
+                p.Children.Add(tb);
+                p.Children.Add(im3);
+                cb.Content = p;
+                winOU.stackP.Children.Add(cb);
+           }
 
             winOU.Show();
             this.Close();
