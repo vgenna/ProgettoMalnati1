@@ -97,7 +97,7 @@ namespace ProgettoMalnati1
                 else
                     conferma = false;
                 /*******************/
-                this.Close();
+                
 
                 string selectedPath = null;
                 if (confPath.IsChecked == false)
@@ -114,7 +114,42 @@ namespace ProgettoMalnati1
                 }
                 //System.Windows.MessageBox.Show("Il percorso è: "+selectedPath);
 
-                Server s = new Server(privato, selectedPath, nome, conferma);
+                Uri image = null;
+                if (imagePath.IsChecked == false)
+                {
+                    /*var dialog = new FolderBrowserDialog();
+                    dialog.Description = "Scegli un'immagine: ";
+                    DialogResult result = dialog.ShowDialog();
+                    selectedPath = dialog.SelectedPath;*/
+                    Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog();
+                    dlg.Title = "Scegli un'immagine da usare come foto profilo";
+
+                    // Set filter for file extension and default file extension 
+                    dlg.DefaultExt = ".png";
+                    dlg.Filter = "JPEG Files (*.jpeg)|*.jpeg|PNG Files (*.png)|*.png|JPG Files (*.jpg)|*.jpg|GIF Files (*.gif)|*.gif";
+
+                    // Display OpenFileDialog by calling ShowDialog method 
+                    Nullable<bool> result = dlg.ShowDialog();
+
+                    // Get the selected file name and display in a TextBox 
+                    if (result == true)
+                    {
+                        // Open document 
+                        image = new Uri(dlg.FileName);
+                    }
+                }
+                else
+                {
+                    //il path sarà quello dell'eseguibile
+                    var uri = new Uri("pack://application:,,,/Resource/Jellyfish.jpg");
+                    image = uri;
+                }
+                profileImage.Source = new BitmapImage(image);
+                System.Windows.MessageBox.Show("Messaggio a cazzo per vedere se ha trovato l'immagine");
+
+                this.Close();
+
+                Server s = new Server(privato, selectedPath, nome, conferma); 
 
                 //s.oSignalEvent.Set();
             }
