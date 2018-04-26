@@ -92,7 +92,7 @@ namespace ProgettoMalnati1
                    worker.RunWorkerCompleted += delegate //potrei levarlo e fare stampare "file Condiviso" solo appena esce dal for
                     {
                         this.Close();
-                        if (error)
+                        if (error == false)
                             System.Windows.MessageBox.Show(string.Format("File {0} condiviso!", nomefile));
                         else
                             System.Windows.MessageBox.Show(string.Format("File {0} NON condiviso!", nomefile));
