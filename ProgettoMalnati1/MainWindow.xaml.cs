@@ -178,22 +178,25 @@ namespace ProgettoMalnati1
                 bitmapImage.StreamSource = memory;
                 bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
                 bitmapImage.EndInit();
+                
                 Image im2 = new Image();
-                im2.Height = 96.00;
-                im2.Width = 96.00;
+                im2.Height = bitmapImage.Height; //farle più piccole in proporzione
+                im2.Width = bitmapImage.Width;
                 im2.Source = bitmapImage;
 
                 //cb.Content = ou.Name;
                 //creo il pannello che conterrà immagine e nome dell'utente
                 WrapPanel p = new WrapPanel();
+                TextBlock tb = new TextBlock();
                 p.VerticalAlignment = VerticalAlignment.Top;
                 p.Margin = new Thickness(7.0, 7.0, 7.0, 0);
-                p.Width = 290;
-                p.Height = 290;
-                p.Background = Brushes.Aqua;
-                p.Orientation = Orientation.Vertical;
-                TextBlock tb = new TextBlock();
-                tb.Text = ou.Name;
+                p.Width = im2.Width;
+                p.Height = im2.Height + tb.Height;
+                p.Background = Brushes.LightGreen;
+                p.Orientation = Orientation.Horizontal;
+                
+                tb.Inlines.Add(new Bold(new Run(ou.Name)));
+                //tb.Text = ou.Name;
                 p.Children.Add(tb);
                 p.Children.Add(im2);
                 ////////////////////////////////////////////////////////////

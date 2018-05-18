@@ -249,36 +249,41 @@ namespace ProgettoMalnati1
             string received_data;
             byte[] receive_byte_array;
 
-
-            while (true)
+            try
             {
-                receive_byte_array = listener.Receive(ref groupEP);
-                received_data = Encoding.ASCII.GetString(receive_byte_array, 0, receive_byte_array.Length);
-                string formattedString = String.Format("Server - Received a broadcast from {0} , Received data: {1}", groupEP.ToString(), received_data);
-                System.Windows.Forms.MessageBox.Show(formattedString);
-
-                if (this.privato == false)
+                while (true)
                 {
-                    System.Windows.Forms.MessageBox.Show("Modalità pubblica.");
-                    Socket sending_socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
-                    IPAddress send_to_address = groupEP.Address;
-                    IPEndPoint sending_end_point = new IPEndPoint(send_to_address, 1501);
-                    sending_socket.SendTo(Encoding.ASCII.GetBytes(nomeUtente), sending_end_point);
+                    receive_byte_array = listener.Receive(ref groupEP);
+                    received_data = Encoding.ASCII.GetString(receive_byte_array, 0, receive_byte_array.Length);
+                    string formattedString = String.Format("Server - Received a broadcast from {0} , Received data: {1}", groupEP.ToString(), received_data);
+                    System.Windows.Forms.MessageBox.Show(formattedString);
 
-                    System.Windows.Forms.MessageBox.Show(image.LocalPath);
-                    var imageToSend = Image.FromFile(image.LocalPath);
-                    MemoryStream ms = new MemoryStream();
-                    imageToSend.Save(ms, System.Drawing.Imaging.ImageFormat.Jpeg);
-                    var msA = ms.ToArray();
-                    sending_socket.SendTo(msA, sending_end_point);
+                    if (this.privato == false)
+                    {
+                        System.Windows.Forms.MessageBox.Show("Modalità pubblica.");
+                        Socket sending_socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+                        IPAddress send_to_address = groupEP.Address;
+                        IPEndPoint sending_end_point = new IPEndPoint(send_to_address, 1501);
+                        sending_socket.SendTo(Encoding.ASCII.GetBytes(nomeUtente), sending_end_point);
 
-                    System.Windows.Forms.MessageBox.Show("Server - Sent!");
-                    sending_socket.Close();
+                        System.Windows.Forms.MessageBox.Show(image.LocalPath);
+                        var imageToSend = Image.FromFile(image.LocalPath);
+                        MemoryStream ms = new MemoryStream();
+                        imageToSend.Save(ms, System.Drawing.Imaging.ImageFormat.Jpeg);
+                        var msA = ms.ToArray();
+                        System.Windows.Forms.MessageBox.Show("sendingBufLen: "+sending_socket.SendBufferSize+" - dimImg: "+ msA.Length);
+                        int a = sending_socket.SendTo(msA, sending_end_point);
+
+                        System.Windows.Forms.MessageBox.Show("Server - Sent "+a+" bytes");
+                        sending_socket.Close();
+                    }
+                    else
+                        System.Windows.Forms.MessageBox.Show("Modalità privata.");
                 }
-                else
-                    System.Windows.Forms.MessageBox.Show("Modalità privata.");
+            } catch(Exception e)
+            {
+                System.Windows.Forms.MessageBox.Show("Errore invio da parte del server! - "+e.Message);
             }
-
             listener.Close(); //QUANDO DEVE CHIUDERSI IL SERVER?
         }
 

@@ -1,6 +1,7 @@
 ﻿using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -123,10 +124,10 @@ namespace ProgettoMalnati1
                     selectedPath = dialog.SelectedPath;*/
                     Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog();
                     dlg.Title = "Scegli un'immagine da usare come foto profilo";
-
+                    dlg.InitialDirectory = System.IO.Path.Combine(System.IO.Path.GetFullPath(@"..\..\"), "Resource\\ProfileImages");
                     // Set filter for file extension and default file extension 
                     dlg.DefaultExt = ".png";
-                    dlg.Filter = "JPEG Files (*.jpeg)|*.jpeg|PNG Files (*.png)|*.png|JPG Files (*.jpg)|*.jpg|GIF Files (*.gif)|*.gif";
+                    dlg.Filter = "All files (*.*)|*.*|PNG Files (*.png)|*.png|JPEG Files (*.jpeg)|*.jpeg|JPG Files (*.jpg)|*.jpg|GIF Files (*.gif)|*.gif";
 
                     // Display OpenFileDialog by calling ShowDialog method 
                     Nullable<bool> result = dlg.ShowDialog();
@@ -144,9 +145,6 @@ namespace ProgettoMalnati1
                     var uri = new Uri("pack://application:,,,/Resource/Jellyfish.jpg");
                     image = uri;
                 }
-                profileImage.Source = new BitmapImage(image);
-                System.Windows.MessageBox.Show("Messaggio a cazzo per vedere se ha trovato l'immagine");
-
                 this.Close();
 
                 Server s = new Server(privato, selectedPath, nome, conferma, image); 

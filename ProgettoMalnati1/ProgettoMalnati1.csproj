@@ -132,11 +132,15 @@
     <Resource Include="Resource\hover.png" />
     <Resource Include="Resource\unchecked.png" />
   </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
-    <Resource Include="Resource\Jellyfish.jpg" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resource\Koala.jpg" />
+    <Resource Include="Resource\ProfileImages\download %281%29.png" />
+    <Resource Include="Resource\ProfileImages\download %282%29.png" />
+    <Resource Include="Resource\ProfileImages\download.png" />
+    <Resource Include="Resource\ProfileImages\images %281%29.jpg" />
+    <Resource Include="Resource\ProfileImages\images %282%29.jpg" />
+    <Resource Include="Resource\ProfileImages\images.jpg" />
+    <Resource Include="Resource\ProfileImages\images.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
