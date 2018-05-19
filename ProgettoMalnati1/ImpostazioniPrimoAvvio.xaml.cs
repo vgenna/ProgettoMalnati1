@@ -24,10 +24,16 @@ namespace ProgettoMalnati1
     {
         //Server s;
         bool privato;
-        
+        string selectedPath = AppDomain.CurrentDomain.BaseDirectory; //default
+        Uri image = new Uri("pack://application:,,,/Resource/ProfileImages/images.jpg");
+
         public ImpostazioniPrimoAvvio()
         {
             InitializeComponent();
+            pubbl.IsChecked = true;
+            textBlock.Width = selectedPath.Length*6;
+            textBlock.Text = selectedPath;
+            profileImage.Source = new BitmapImage(image);
             privato = false;
 
             /**senza reg file, modifico la chiave di registro prima per i file e poi per le cartelle**/
@@ -97,54 +103,7 @@ namespace ProgettoMalnati1
                 }
                 else
                     conferma = false;
-                /*******************/
-                
 
-                string selectedPath = null;
-                if (confPath.IsChecked == false)
-                {
-                    var dialog = new FolderBrowserDialog();
-                    dialog.Description = "Scegli percorso in cui salvare il file: ";
-                    DialogResult result = dialog.ShowDialog();
-                    selectedPath = dialog.SelectedPath;
-                }
-                else
-                {
-                    //il path sarà quello dell'eseguibile
-                    selectedPath = AppDomain.CurrentDomain.BaseDirectory;
-                }
-                //System.Windows.MessageBox.Show("Il percorso è: "+selectedPath);
-
-                Uri image = null;
-                if (imagePath.IsChecked == false)
-                {
-                    /*var dialog = new FolderBrowserDialog();
-                    dialog.Description = "Scegli un'immagine: ";
-                    DialogResult result = dialog.ShowDialog();
-                    selectedPath = dialog.SelectedPath;*/
-                    Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog();
-                    dlg.Title = "Scegli un'immagine da usare come foto profilo";
-                    dlg.InitialDirectory = System.IO.Path.Combine(System.IO.Path.GetFullPath(@"..\..\"), "Resource\\ProfileImages");
-                    // Set filter for file extension and default file extension 
-                    dlg.DefaultExt = ".png";
-                    dlg.Filter = "All files (*.*)|*.*|PNG Files (*.png)|*.png|JPEG Files (*.jpeg)|*.jpeg|JPG Files (*.jpg)|*.jpg|GIF Files (*.gif)|*.gif";
-
-                    // Display OpenFileDialog by calling ShowDialog method 
-                    Nullable<bool> result = dlg.ShowDialog();
-
-                    // Get the selected file name and display in a TextBox 
-                    if (result == true)
-                    {
-                        // Open document 
-                        image = new Uri(dlg.FileName);
-                    }
-                }
-                else
-                {
-                    //il path sarà quello dell'eseguibile
-                    var uri = new Uri("pack://application:,,,/Resource/Jellyfish.jpg");
-                    image = uri;
-                }
                 this.Close();
 
                 Server s = new Server(privato, selectedPath, nome, conferma, image); 
@@ -157,15 +116,35 @@ namespace ProgettoMalnati1
                 System.Windows.MessageBox.Show(ex.Message + "\n");
             }
         }
-
-        private void textBox_TextChanged(object sender, TextChangedEventArgs e)
+        private void Button_Click_1(object sender, RoutedEventArgs e)
         {
-
+            var dialog = new FolderBrowserDialog();
+            dialog.Description = "Scegli percorso in cui salvare il file: ";
+            DialogResult result = dialog.ShowDialog();
+            selectedPath = dialog.SelectedPath;
+            textBlock.Width = selectedPath.Length * 6;
+            textBlock.Text = selectedPath;
         }
 
-        private void checkBox_Checked(object sender, RoutedEventArgs e)
+        private void changeImage_Click(object sender, RoutedEventArgs e)
         {
+            Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog();
+            dlg.Title = "Scegli un'immagine da usare come foto profilo";
+            dlg.InitialDirectory = System.IO.Path.Combine(System.IO.Path.GetFullPath(@"..\..\"), "Resource\\ProfileImages");
+            // Set filter for file extension and default file extension 
+            dlg.DefaultExt = ".png";
+            dlg.Filter = "All files (*.*)|*.*|PNG Files (*.png)|*.png|JPEG Files (*.jpeg)|*.jpeg|JPG Files (*.jpg)|*.jpg|GIF Files (*.gif)|*.gif";
 
+            // Display OpenFileDialog by calling ShowDialog method 
+            Nullable<bool> result = dlg.ShowDialog();
+
+            // Get the selected file name and display in a TextBox 
+            if (result == true)
+            {
+                // Open document 
+                image = new Uri(dlg.FileName);
+                profileImage.Source = new BitmapImage(image);
+            }
         }
     }
 }
