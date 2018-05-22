@@ -17,7 +17,7 @@
             <ColumnDefinition Width="535*"/>
             <ColumnDefinition Width="14*"/>
         </Grid.ColumnDefinitions>
-        <ScrollViewer VerticalScrollBarVisibility="Visible" HorizontalScrollBarVisibility="Hidden" Width="455" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="27,58,0,64" Grid.RowSpan="2">
+        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Hidden" Width="455" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="27,58,0,64" Grid.RowSpan="2">
             <StackPanel Name="stackP" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.ColumnSpan="3" Orientation="Vertical"/>
         </ScrollViewer>
         <TextBlock x:Name="titleWinOU" HorizontalAlignment="Left" Margin="160,24,0,0" TextWrapping="Wrap" Text="Seleziona gli utenti con cui condividere" VerticalAlignment="Top" Width="209"/>

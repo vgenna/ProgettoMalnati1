@@ -22,7 +22,7 @@ namespace ProgettoMalnati1
     /// </summary>
     public partial class ImpostazioniPrimoAvvio : Window
     {
-        //Server s;
+        Server s;
         bool privato;
         string selectedPath = AppDomain.CurrentDomain.BaseDirectory; //default
         Uri image = new Uri("pack://application:,,,/Resource/ProfileImages/download.jpg");
@@ -104,7 +104,7 @@ namespace ProgettoMalnati1
 
                 this.Close();
 
-                Server s = new Server(privato, selectedPath, nome, conferma, image); 
+                s = new Server(privato, selectedPath, nome, conferma, image); 
 
                 //s.oSignalEvent.Set();
             }
