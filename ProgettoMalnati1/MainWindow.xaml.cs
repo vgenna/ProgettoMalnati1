@@ -136,17 +136,17 @@ namespace ProgettoMalnati1
             WinOtherUsers winOU = new WinOtherUsers(c);
 
             /****************start******************/
-            /*WrapPanel p = new WrapPanel();
-            p.VerticalAlignment = VerticalAlignment.Top;
-            p.Margin = new Thickness(7.0, 7.0, 7.0, 0);
-            p.Width = 290;
-            p.Height = 290;
-            p.Background = Brushes.White;
-            p.Orientation = Orientation.Vertical;
+            /*WrapPanel p2 = new WrapPanel();
+            p2.VerticalAlignment = VerticalAlignment.Top;
+            p2.Margin = new Thickness(7.0, 7.0, 7.0, 0);
+            p2.Width = 290;
+            p2.Height = 290;
+            p2.Background = Brushes.White;
+            p2.Orientation = Orientation.Vertical;
 
             for (var i = 0; i < 3; i++)
             {
-                p.Children.Add(new Rectangle
+                p2.Children.Add(new Rectangle
                 {
                     Width = 100,
                     Height = 20,
@@ -155,7 +155,7 @@ namespace ProgettoMalnati1
                     Margin = new Thickness(5)
                 });
             }
-            winOU.stackP.Children.Add(p);*/
+            winOU.stackP.Children.Add(p2);*/
             
 
             
