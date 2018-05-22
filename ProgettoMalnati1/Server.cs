@@ -266,15 +266,14 @@ namespace ProgettoMalnati1
                         IPEndPoint sending_end_point = new IPEndPoint(send_to_address, 1501);
                         sending_socket.SendTo(Encoding.ASCII.GetBytes(nomeUtente), sending_end_point);
 
-                        System.Windows.Forms.MessageBox.Show(image.LocalPath);
+                        
                         var imageToSend = Image.FromFile(image.LocalPath);
                         MemoryStream ms = new MemoryStream();
                         imageToSend.Save(ms, System.Drawing.Imaging.ImageFormat.Jpeg);
                         var msA = ms.ToArray();
                         System.Windows.Forms.MessageBox.Show("sendingBufLen: "+sending_socket.SendBufferSize+" - dimImg: "+ msA.Length);
                         int a = sending_socket.SendTo(msA, sending_end_point);
-
-                        System.Windows.Forms.MessageBox.Show("Server - Sent "+a+" bytes");
+                        
                         sending_socket.Close();
                     }
                     else
@@ -347,11 +346,11 @@ namespace ProgettoMalnati1
                     }
 
                 }
-                System.Windows.MessageBox.Show(f_d);
+                /*System.Windows.MessageBox.Show(f_d);
                 if (f_d.Equals("uno"))
                     System.Windows.MessageBox.Show("Ho ricevuto una cartella.");
                 else
-                    System.Windows.MessageBox.Show("Ho ricevuto un file.");
+                    System.Windows.MessageBox.Show("Ho ricevuto un file.");*/
 
 
 

@@ -37,7 +37,6 @@ namespace ProgettoMalnati1
             privato = false;
 
             /**senza reg file, modifico la chiave di registro prima per i file e poi per le cartelle**/
-            System.Windows.MessageBox.Show(AppDomain.CurrentDomain.BaseDirectory);
             RegistryKey key = Registry.ClassesRoot.OpenSubKey("*\\shell", true);
             key.CreateSubKey("AppMalnati");
             key = key.OpenSubKey("AppMalnati", true);
@@ -93,7 +92,6 @@ namespace ProgettoMalnati1
                 {
                     nome = nome + words[i];
                 }
-                System.Windows.Forms.MessageBox.Show("----> " + nome);
 
                 //controllo che sia stata spuntata la casella di conferma ricezione
                 bool conferma = false;
@@ -121,9 +119,12 @@ namespace ProgettoMalnati1
             var dialog = new FolderBrowserDialog();
             dialog.Description = "Scegli percorso in cui salvare il file: ";
             DialogResult result = dialog.ShowDialog();
-            selectedPath = dialog.SelectedPath;
-            textBlock.Width = selectedPath.Length * 6;
-            textBlock.Text = selectedPath;
+            if (result.ToString()=="OK") {
+                selectedPath = dialog.SelectedPath;
+                textBlock.Width = selectedPath.Length * 6;
+                textBlock.Text = selectedPath;
+            }
+      
         }
 
         private void changeImage_Click(object sender, RoutedEventArgs e)
