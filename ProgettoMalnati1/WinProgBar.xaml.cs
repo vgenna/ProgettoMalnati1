@@ -50,7 +50,7 @@ namespace ProgettoMalnati1
                 if (Directory.Exists(c.filename))
                 {
 
-                    System.Windows.MessageBox.Show("Invio di una cartella");
+                    //System.Windows.MessageBox.Show("Invio di una cartella");
                     nomefile = c.filename + ".zip";//nomefile sara' la stringa ottenuta dallo zip
                     /*
                      *compressione della cartella con creazione della directory e poi successiva eliminazione altrimenti non puo' essere reinviata
@@ -131,7 +131,7 @@ namespace ProgettoMalnati1
             
             try
             {
-                System.Windows.MessageBox.Show("Invio di una FILE");
+                //System.Windows.MessageBox.Show("Invio di una FILE");
                 double timeLeft, lastSpeed, averageSpeed=0;
                 int amountLeft, amountProcessed = 0, timeTaken = 0, preTransferTime, postTransferTime;
                 client = new TcpClient(IP_addr, port_number);

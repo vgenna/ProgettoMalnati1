@@ -132,7 +132,9 @@
     <Resource Include="Resource\hover.png" />
     <Resource Include="Resource\unchecked.png" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Resource Include="Resource\ProfileImages\download.jpg" />
+  </ItemGroup>
   <ItemGroup>
     <Resource Include="Resource\ProfileImages\download %281%29.png" />
     <Resource Include="Resource\ProfileImages\download %282%29.png" />

@@ -166,8 +166,8 @@ namespace ProgettoMalnati1
             foreach (OtherUser ou in c.otherUsers.Values)
             {
                 CheckBox cb = new CheckBox();
-                Style style = this.FindResource("myCheckboxStyle") as Style;
-                cb.Style = style;
+                //Style style = this.FindResource("myCheckboxStyle") as Style;
+                //cb.Style = style;
                 cb.Name = ou.Name;
 
                 var memory = new MemoryStream();

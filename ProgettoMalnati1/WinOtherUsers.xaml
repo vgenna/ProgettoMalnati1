@@ -5,7 +5,9 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ProgettoMalnati1"
         mc:Ignorable="d"
-        Title="WinOtherUsers" Height="618.75" Width="565.179">
+        Title="WinOtherUsers" Height="618.75" Width="565.179"
+        ResizeMode="NoResize"
+        WindowStartupLocation = "CenterScreen">
     <Grid Margin="39,0,-8,0">
         <Grid.RowDefinitions>
             <RowDefinition Height="293*"/>
