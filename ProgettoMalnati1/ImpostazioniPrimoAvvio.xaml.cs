@@ -22,16 +22,19 @@ namespace ProgettoMalnati1
     /// </summary>
     public partial class ImpostazioniPrimoAvvio : Window
     {
-        //Server s;
+        Server s; //vedi riga 107
         bool privato;
         string selectedPath = AppDomain.CurrentDomain.BaseDirectory; //default
         Uri image = new Uri("pack://application:,,,/Resource/ProfileImages/download.jpg");
+        bool inizio = true;
 
         public ImpostazioniPrimoAvvio()
         {
+            //if(inizio == false)
+                //System.Windows.Application.Current.Shutdown();
             InitializeComponent();
             pubbl.IsChecked = true;
-            textBlock.Width = selectedPath.Length*6;
+            textBlock.Width = selectedPath.Length * 6;
             textBlock.Text = selectedPath;
             profileImage.Source = new BitmapImage(image);
             privato = false;
@@ -63,52 +66,107 @@ namespace ProgettoMalnati1
         }
 
 
+
         private void button_Click(object sender, RoutedEventArgs e)
         {
             try
             {
-                if (pubbl.IsChecked == true)
+                //if (inizio == true)
+                //{
+
+                    if (pubbl.IsChecked == true)
+                    {
+                        privato = false;
+                    }
+                    else if (priv.IsChecked == true)
+                    {
+                        privato = true;
+                    }
+                    //this.Close();
+
+                    //leggo nome utente
+                    string nome = nomeUtente.Text;
+                    string[] words = System.Text.RegularExpressions.Regex.Split(nome, @"\s+");
+
+                    if (words.Length == 0 || words[0] == "")
+                    {
+                        //terminiamo il processo ???????????????????? -> concordare con Enzo
+                        System.Windows.Forms.MessageBox.Show("INSERISCI NOME UTENTE.");
+                        return;
+                    }
+                    nome = null;
+                    for (int i = 0; i < words.Length; i++)
+                    {
+                        nome = nome + words[i];
+                    }
+
+                    //controllo che sia stata spuntata la casella di conferma ricezione
+                    bool conferma = false;
+                    if (conf.IsChecked == true)
+                    {
+                        conferma = true;
+                    }
+                    else
+                        conferma = false;
+
+                    this.Close();
+
+
+                    /*Server*/
+                    s = new Server(privato, selectedPath, nome, conferma, image);
+
+                    //s.oSignalEvent.Set();
+
+                    //inizio = false;
+
+                //}
+                /*else
                 {
-                    privato = false;
-                }
-                else if (priv.IsChecked == true)
-                {
-                    privato = true;
-                }
-                //this.Close();
+                    //System.Windows.Application.Current.Shutdown();
+                    if (pubbl.IsChecked == true)
+                    {
+                        privato = false;
+                    }
+                    else if (priv.IsChecked == true)
+                    {
+                        privato = true;
+                    }
+                    //this.Close();
 
-                //leggo nome utente
-                string nome = nomeUtente.Text;
-                string[] words = System.Text.RegularExpressions.Regex.Split(nome, @"\s+");
+                    //leggo nome utente
+                    string nome = nomeUtente.Text;
+                    string[] words = System.Text.RegularExpressions.Regex.Split(nome, @"\s+");
 
-                if (words.Length == 0 || words[0] == "")
-                {
-                    //terminiamo il processo ???????????????????? -> concordare con Enzo
-                    System.Windows.Forms.MessageBox.Show("INSERISCI NOME UTENTE.");
-                    return;
-                }
-                nome = null;
-                for (int i = 0; i < words.Length; i++)
-                {
-                    nome = nome + words[i];
-                }
+                    if (words.Length == 0 || words[0] == "")
+                    {
+                        //terminiamo il processo ???????????????????? -> concordare con Enzo
+                        System.Windows.Forms.MessageBox.Show("INSERISCI NOME UTENTE.");
+                        return;
+                    }
+                    nome = null;
+                    for (int i = 0; i < words.Length; i++)
+                    {
+                        nome = nome + words[i];
+                    }
 
-                //controllo che sia stata spuntata la casella di conferma ricezione
-                bool conferma = false;
-                if (conf.IsChecked == true)
-                {
-                    conferma = true;
-                }
-                else
-                    conferma = false;
+                    //controllo che sia stata spuntata la casella di conferma ricezione
+                    bool conferma = false;
+                    if (conf.IsChecked == true)
+                    {
+                        conferma = true;
+                    }
+                    else
+                        conferma = false;
 
-                this.Close();
+                    this.Close();
 
-                Server s = new Server(privato, selectedPath, nome, conferma, image); 
 
-                //s.oSignalEvent.Set();
+                    //Server
+                    s = new Server(privato, selectedPath, nome, conferma, image);
+
+                }*/
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 //gestire l'eccezione
                 System.Windows.MessageBox.Show(ex.Message + "\n");
@@ -119,12 +177,13 @@ namespace ProgettoMalnati1
             var dialog = new FolderBrowserDialog();
             dialog.Description = "Scegli percorso in cui salvare il file: ";
             DialogResult result = dialog.ShowDialog();
-            if (result.ToString()=="OK") {
+            if (result.ToString() == "OK")
+            {
                 selectedPath = dialog.SelectedPath;
                 textBlock.Width = selectedPath.Length * 6;
                 textBlock.Text = selectedPath;
             }
-      
+
         }
 
         private void changeImage_Click(object sender, RoutedEventArgs e)
