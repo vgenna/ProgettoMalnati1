@@ -5,10 +5,10 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ProgettoMalnati1"
         mc:Ignorable="d"
-        Title="WinOtherUsers" Height="618.75" Width="565.179"
+        Title="Utenti disponibili" Height="618.75" Width="565.179"
         ResizeMode="NoResize"
         WindowStartupLocation = "CenterScreen">
-    <Grid Margin="39,0,-8,0">
+    <Grid Margin="21,0,10,0">
         <Grid.RowDefinitions>
             <RowDefinition Height="293*"/>
             <RowDefinition Height="295*"/>
@@ -17,7 +17,7 @@
             <ColumnDefinition Width="535*"/>
             <ColumnDefinition Width="14*"/>
         </Grid.ColumnDefinitions>
-        <ScrollViewer VerticalScrollBarVisibility="Visible" HorizontalScrollBarVisibility="Hidden" Width="455" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="27,58,0,64" Grid.RowSpan="2">
+        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Hidden" Width="455" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="27,58,0,64" Grid.RowSpan="2">
             <StackPanel Name="stackP" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.ColumnSpan="3" Orientation="Vertical"/>
         </ScrollViewer>
         <TextBlock x:Name="titleWinOU" HorizontalAlignment="Left" Margin="160,24,0,0" TextWrapping="Wrap" Text="Seleziona gli utenti con cui condividere" VerticalAlignment="Top" Width="209"/>
