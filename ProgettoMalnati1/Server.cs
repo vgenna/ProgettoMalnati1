@@ -322,7 +322,7 @@ namespace ProgettoMalnati1
                 }
                 else
                 {
-                    this.privato = false;
+                    this.privato = false;;
                     if (myIcon.Visible == true)
                     {
                         myIcon.Visible = false;
