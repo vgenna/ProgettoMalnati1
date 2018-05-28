@@ -48,7 +48,7 @@ namespace ProgettoMalnati1
         System.Windows.Forms.MenuItem myMenuItem2_;
 
         TcpListener Listener = null; //ti sia lieve la terra, https://stackoverflow.com/questions/365370/proper-way-to-stop-tcplistener
-
+       
 
         public Server(bool privato, string savePath, string nomeUtente, bool conferma, Uri image)
         {
@@ -59,7 +59,7 @@ namespace ProgettoMalnati1
             this.image = image;
 
             bool defaultPath = false;
-
+             
             /*******CREAZIONE ICONA NELLA TASKBAR******/
             //nel server per gestire la variabile bool "privato"
             notifyThread = new Thread(
@@ -126,7 +126,7 @@ namespace ProgettoMalnati1
             );
 
             notifyThread_.Start();
-
+ 
             /********************************************/
 
 
@@ -136,7 +136,7 @@ namespace ProgettoMalnati1
             try
             {
                 Listener = new TcpListener(IPAddress.Any, 1500);
-                Listener.Start(); 
+                Listener.Start();
             }
             catch (Exception ex)
             {
@@ -196,96 +196,21 @@ namespace ProgettoMalnati1
                 else
                     defPath = "percorso di salvataggio di default -> " + choosenPath2;
 
-                /* SOL2 */
-                /*Thread viewerThread = new Thread(new ThreadStart( () =>
+                /* SOL1 per aprire la finestra che non si apre*/ //https://eprystupa.wordpress.com/2008/07/28/running-wpf-application-with-multiple-ui-threads/
+                Thread thread = new Thread(() =>
                 {
-                    SynchronizationContext.SetSynchronizationContext(
-                            new DispatcherSynchronizationContext(Dispatcher.CurrentDispatcher));
-
-                    Window1 win = new Window1(this.Listener);
-                    /**/
-                /*WrapPanel p = new WrapPanel();
-                p.VerticalAlignment = VerticalAlignment.Top;
-                p.Margin = new Thickness(7.0, 7.0, 7.0, 0);
-                //p.Width = im2.Width;
-                //p.Height = im2.Height + tb.Height;
-                p.Background = System.Windows.Media.Brushes.LightGreen;
-                p.Orientation = System.Windows.Controls.Orientation.Horizontal;
-                TextBlock tbNomeU = new TextBlock();
-                tbNomeU.Inlines.Add(new Bold(new Run("Nome utente: " + nomeU)));
-                p.Children.Add(tbNomeU);
-                TextBlock tbConfermaRic = new TextBlock();
-                tbConfermaRic.Inlines.Add(new Bold(new Run("Conferma di ricezione: " + confRicezione)));
-                p.Children.Add(tbConfermaRic);
-                TextBlock tbDefPath = new TextBlock();
-                tbDefPath.Inlines.Add(new Bold(new Run("Default path: " + defPath)));
-                p.Children.Add(tbDefPath);
-                //inserisco l'immagine del profilo
-                var imageProfile = System.Drawing.Image.FromFile(image2.LocalPath);
-                MemoryStream ms = new MemoryStream();
-                imageProfile.Save(ms, System.Drawing.Imaging.ImageFormat.Jpeg);
-                ms.Position = 0;
-                var bitmapImage = new BitmapImage();
-                bitmapImage.BeginInit();
-                bitmapImage.StreamSource = ms;
-                bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
-                bitmapImage.EndInit();
-                System.Windows.Controls.Image im2 = new System.Windows.Controls.Image();
-                im2.Height = bitmapImage.Height; //farle più piccole in proporzione
-                im2.Width = bitmapImage.Width;
-                im2.Source = bitmapImage;
-                p.Children.Add(im2);
-
-
-                //win.stackP.Children.Add(p);
-                win.Closed += (sender, e2) => Dispatcher.CurrentDispatcher.BeginInvokeShutdown(DispatcherPriority.Background);
-                win.Activate();
-                win.Visibility = Visibility.Visible;
-                win.Show();
-                System.Windows.Forms.MessageBox.Show("eccolo");
-
-                var bi = new BitmapImage();
-                bi.BeginInit();
-                bi.CacheOption = BitmapCacheOption.OnLoad;
-                bi.UriSource = image2;
-                bi.EndInit();
-
-                var vis = new DrawingVisual();
-                var dc = vis.RenderOpen();
-                dc.DrawImage(bi, new Rect { Width = bi.Width, Height = bi.Height });
-                dc.Close();
-
-                System.Windows.Controls.PrintDialog pdialog = new System.Windows.Controls.PrintDialog();
-                if(pdialog.ShowDialog() == true)
-                {
-                    pdialog.PrintVisual(vis, "Profile image");
-                }
-
-                Dispatcher.Run();
-            }));
-            viewerThread.SetApartmentState(ApartmentState.STA); // needs to be STA or throws exception
-            //viewerThread.IsBackground = true;
-            viewerThread.Start();*/
-
-
-
-                /*******fine riempimento finestra*********/
-                /*var bi = new BitmapImage();
-                bi.BeginInit();
-                bi.CacheOption = BitmapCacheOption.OnLoad;
-                bi.UriSource = this.image;
-                bi.EndInit();
-
-                var vis = new DrawingVisual();
-                var dc = vis.RenderOpen();
-                dc.DrawImage(bi, new Rect { Width = bi.Width, Height = bi.Height });
-                dc.Close();
-
-                System.Windows.Controls.PrintDialog pdialog = new System.Windows.Controls.PrintDialog();
-                if (pdialog.ShowDialog() == true)
-                {
-                    pdialog.PrintVisual(vis, "Profile image");
-                }*/
+                    var w1 = new Window1();
+                    w1.Activate();
+                    w1.Visibility = Visibility.Visible;
+                    w1.Show();
+                    System.Windows.Forms.MessageBox.Show("Window1");
+                    //w.Closed += (sender2, e2) =>
+                    //w.Dispatcher.InvokeShutdown();
+                    System.Windows.Threading.Dispatcher.Run();
+                    
+                });
+                thread.SetApartmentState(ApartmentState.STA);
+                thread.Start();
 
                 var confirmResult = System.Windows.Forms.MessageBox.Show("Nome: " + nomeU + "\n\n" + "Conferma di ricezione: " + confRicezione +
                     "\n\n" + "Default path: " + defPath + "\n\n" + "Vuoi cambiare le tue proprieta' (l'applicazione sara' riavviata) ?", "Impostazioni di condivisione", MessageBoxButtons.YesNo);
@@ -297,7 +222,7 @@ namespace ProgettoMalnati1
                     //1)
                     Listener.Server.Close();
                     System.Windows.Forms.Application.Restart();
-                    System.Diagnostics.Process.GetCurrentProcess().Kill();
+                    System.Environment.Exit(0);//System.Diagnostics.Process.GetCurrentProcess().Kill();
                     /*****************************************/
                 }
                 /*
@@ -345,7 +270,7 @@ namespace ProgettoMalnati1
 
         }
 
-        
+
 
 
         //prima funzione del thread
@@ -373,22 +298,23 @@ namespace ProgettoMalnati1
                         IPEndPoint sending_end_point = new IPEndPoint(send_to_address, 1501);
                         sending_socket.SendTo(Encoding.ASCII.GetBytes(nomeUtente), sending_end_point);
 
-                        
+
                         var imageToSend = System.Drawing.Image.FromFile(image.LocalPath);
                         MemoryStream ms = new MemoryStream();
                         imageToSend.Save(ms, System.Drawing.Imaging.ImageFormat.Jpeg);
                         var msA = ms.ToArray();
-                        System.Windows.Forms.MessageBox.Show("sendingBufLen: "+sending_socket.SendBufferSize+" - dimImg: "+ msA.Length);
+                        System.Windows.Forms.MessageBox.Show("sendingBufLen: " + sending_socket.SendBufferSize + " - dimImg: " + msA.Length);
                         int a = sending_socket.SendTo(msA, sending_end_point);
-                        
+
                         sending_socket.Close();
                     }
                     else
                         System.Windows.Forms.MessageBox.Show("Modalità privata.");
                 }
-            } catch(Exception e)
+            }
+            catch (Exception e)
             {
-                System.Windows.Forms.MessageBox.Show("Errore invio da parte del server! - "+e.Message);
+                System.Windows.Forms.MessageBox.Show("Errore invio da parte del server! - " + e.Message);
             }
             listener.Close(); //QUANDO DEVE CHIUDERSI IL SERVER?
         }
@@ -626,7 +552,7 @@ namespace ProgettoMalnati1
                 System.Windows.MessageBox.Show("Hai rifiutato la ricezione del file.");
             }*/
         }
-        
+
         /********************/
         public bool getPrivato()
         {

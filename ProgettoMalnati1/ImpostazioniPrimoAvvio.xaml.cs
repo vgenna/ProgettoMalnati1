@@ -27,6 +27,7 @@ namespace ProgettoMalnati1
         string selectedPath = AppDomain.CurrentDomain.BaseDirectory; //default
         Uri image = new Uri("pack://application:,,,/Resource/ProfileImages/download.jpg");
         bool inizio = true;
+        
 
         public ImpostazioniPrimoAvvio()
         {
