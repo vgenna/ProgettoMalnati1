@@ -37,8 +37,8 @@ namespace ProgettoMalnati1
 
         public void startBroadcastSocket()
         {
-            string myIP = GetLocalIPAddress(); 
-            //string myIP = "127.0.0.1"; //USARE QUESTO PER PROVARE IN LOCALE QUANDO SI è TIPO SU EDUROAM
+            //string myIP = GetLocalIPAddress(); 
+            string myIP = "127.0.0.1"; //USARE QUESTO PER PROVARE IN LOCALE QUANDO SI è TIPO SU EDUROAM
             
             IPEndPoint listenEndPoint = new IPEndPoint(IPAddress.Parse(myIP), 1501);
             UdpClient client = new UdpClient(listenEndPoint);

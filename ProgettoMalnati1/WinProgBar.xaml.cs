@@ -35,10 +35,11 @@ namespace ProgettoMalnati1
             this.Show();
         }
 
-        public WinProgBar(Client c)
+        public WinProgBar(Client c, WinOtherUsers winotheru)
         {
             try
             {
+                winotheru.Close();
                 InitializeComponent();
 
                 this.c = c;
@@ -62,7 +63,9 @@ namespace ProgettoMalnati1
                     if (File.Exists(nomefile))
                         File.Delete(nomefile);
 
+                    System.Windows.MessageBox.Show("compressing file and sending");
                     ZipFile.CreateFromDirectory(c.filename, nomefile);
+
                     flagDirectory = 1;
                 }
 
@@ -208,6 +211,7 @@ namespace ProgettoMalnati1
             catch (Exception e)
 
             {
+                error = true;
                 System.Windows.MessageBox.Show(e.Message);
             }
             finally

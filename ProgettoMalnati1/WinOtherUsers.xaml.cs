@@ -55,8 +55,9 @@ namespace ProgettoMalnati1
 
             if (nUtenti>0)
             {
-                WinProgBar winPB = new WinProgBar(c);
-                this.Close();
+                //this.Close();
+                WinProgBar winPB = new WinProgBar(c, this);
+                
             }
             else
             {
