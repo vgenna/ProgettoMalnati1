@@ -456,8 +456,8 @@ namespace ProgettoMalnati1
                                 {
                                     st = st + "-Copy";
                                 }
+                                System.Windows.MessageBox.Show("unzipping...");
                                 ZipFile.ExtractToDirectory(nomeFile, st);
-                                //elimino il .zip
                                 File.Delete(SaveFileName);
                             }
 
