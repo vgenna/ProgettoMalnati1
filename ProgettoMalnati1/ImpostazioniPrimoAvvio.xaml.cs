@@ -1,8 +1,12 @@
 ﻿using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
+using System.Net;
+using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -27,12 +31,12 @@ namespace ProgettoMalnati1
         string selectedPath = AppDomain.CurrentDomain.BaseDirectory; //default
         Uri image = new Uri("pack://application:,,,/Resource/ProfileImages/download.jpg");
         bool inizio = true;
-        
+
 
         public ImpostazioniPrimoAvvio()
         {
             //if(inizio == false)
-                //System.Windows.Application.Current.Shutdown();
+            //System.Windows.Application.Current.Shutdown();
             InitializeComponent();
             pubbl.IsChecked = true;
             textBlock.Width = selectedPath.Length * 6;
@@ -64,6 +68,7 @@ namespace ProgettoMalnati1
             regeditProcess.WaitForExit();*/
 
             //s = myServer;
+
         }
 
 
@@ -72,53 +77,58 @@ namespace ProgettoMalnati1
         {
             try
             {
+                if (checkConnection() == false)
+                {
+                    System.Windows.Forms.MessageBox.Show("Connessione internet assente", "Errore connessione internet", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
                 //if (inizio == true)
                 //{
 
-                    if (pubbl.IsChecked == true)
-                    {
-                        privato = false;
-                    }
-                    else if (priv.IsChecked == true)
-                    {
-                        privato = true;
-                    }
-                    //this.Close();
+                if (pubbl.IsChecked == true)
+                {
+                    privato = false;
+                }
+                else if (priv.IsChecked == true)
+                {
+                    privato = true;
+                }
+                //this.Close();
 
-                    //leggo nome utente
-                    string nome = nomeUtente.Text;
-                    string[] words = System.Text.RegularExpressions.Regex.Split(nome, @"\s+");
+                //leggo nome utente
+                string nome = nomeUtente.Text;
+                string[] words = System.Text.RegularExpressions.Regex.Split(nome, @"\s+");
 
-                    if (words.Length == 0 || words[0] == "")
-                    {
-                        //terminiamo il processo ???????????????????? -> concordare con Enzo
-                        System.Windows.Forms.MessageBox.Show("INSERISCI NOME UTENTE.");
-                        return;
-                    }
-                    nome = null;
-                    for (int i = 0; i < words.Length; i++)
-                    {
-                        nome = nome + words[i];
-                    }
+                if (words.Length == 0 || words[0] == "")
+                {
+                    //terminiamo il processo ???????????????????? -> concordare con Enzo
+                    System.Windows.Forms.MessageBox.Show("INSERISCI NOME UTENTE.");
+                    return;
+                }
+                nome = null;
+                for (int i = 0; i < words.Length; i++)
+                {
+                    nome = nome + words[i];
+                }
 
-                    //controllo che sia stata spuntata la casella di conferma ricezione
-                    bool conferma = false;
-                    if (conf.IsChecked == true)
-                    {
-                        conferma = true;
-                    }
-                    else
-                        conferma = false;
+                //controllo che sia stata spuntata la casella di conferma ricezione
+                bool conferma = false;
+                if (conf.IsChecked == true)
+                {
+                    conferma = true;
+                }
+                else
+                    conferma = false;
 
-                    this.Close();
+                this.Close();
 
 
-                    /*Server*/
-                    s = new Server(privato, selectedPath, nome, conferma, image);
+                /*Server*/
+                s = new Server(privato, selectedPath, nome, conferma, image);
 
-                    //s.oSignalEvent.Set();
+                //s.oSignalEvent.Set();
 
-                    //inizio = false;
+                //inizio = false;
 
                 //}
                 /*else
@@ -173,6 +183,23 @@ namespace ProgettoMalnati1
                 System.Windows.MessageBox.Show(ex.Message + "\n");
             }
         }
+
+        private bool checkConnection()
+        {
+            try
+            {
+                using (var client = new WebClient())
+                using (client.OpenRead("http://clients3.google.com/generate_204"))
+                {
+                    return true;
+                }
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
         private void Button_Click_1(object sender, RoutedEventArgs e)
         {
             var dialog = new FolderBrowserDialog();
@@ -189,6 +216,7 @@ namespace ProgettoMalnati1
 
         private void changeImage_Click(object sender, RoutedEventArgs e)
         {
+            Socket sending_socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
             Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog();
             dlg.Title = "Scegli un'immagine da usare come foto profilo";
             dlg.InitialDirectory = System.IO.Path.Combine(System.IO.Path.GetFullPath(@"..\..\"), "Resource\\ProfileImages");
@@ -204,7 +232,19 @@ namespace ProgettoMalnati1
             {
                 // Open document 
                 image = new Uri(dlg.FileName);
-                profileImage.Source = new BitmapImage(image);
+                /*controllo dimensione immagine selezionata*/
+                var imageToSend = System.Drawing.Image.FromFile(image.LocalPath);
+                MemoryStream ms = new MemoryStream();
+                imageToSend.Save(ms, System.Drawing.Imaging.ImageFormat.Jpeg);
+                var msA = ms.ToArray();
+                if (msA.Length > 65536)
+                {
+                    System.Windows.Forms.MessageBox.Show("Non sono consentite immagini del profilo di qualita' superiore a 8KB", "Errore immagine profilo", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+                /**/
+                else
+                    profileImage.Source = new BitmapImage(image);
             }
         }
     }

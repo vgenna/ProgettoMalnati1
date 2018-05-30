@@ -22,6 +22,9 @@ using System.Windows.Documents;
 using System.Windows.Media.Imaging;
 using System.Windows.Media;
 using System.Windows.Threading;
+using System.Diagnostics;
+using System.Drawing.Imaging;
+
 //using System.Windows.Threading;
 
 namespace ProgettoMalnati1
@@ -196,6 +199,11 @@ namespace ProgettoMalnati1
                 else
                     defPath = "percorso di salvataggio di default -> " + choosenPath2;
 
+                /***************/
+                
+
+                /***************/
+
                 /* SOL1 per aprire la finestra che non si apre*/ //https://eprystupa.wordpress.com/2008/07/28/running-wpf-application-with-multiple-ui-threads/
                 Thread thread = new Thread(() =>
                 {
@@ -206,7 +214,8 @@ namespace ProgettoMalnati1
                     System.Windows.Forms.MessageBox.Show("Window1");
                     //w.Closed += (sender2, e2) =>
                     //w.Dispatcher.InvokeShutdown();
-                    System.Windows.Threading.Dispatcher.Run();
+                    //System.Windows.Forms.Application.Run();
+                    Dispatcher.Run();
                     
                 });
                 thread.SetApartmentState(ApartmentState.STA);
@@ -298,7 +307,6 @@ namespace ProgettoMalnati1
                         IPEndPoint sending_end_point = new IPEndPoint(send_to_address, 1501);
                         sending_socket.SendTo(Encoding.ASCII.GetBytes(nomeUtente), sending_end_point);
 
-
                         var imageToSend = System.Drawing.Image.FromFile(image.LocalPath);
                         MemoryStream ms = new MemoryStream();
                         imageToSend.Save(ms, System.Drawing.Imaging.ImageFormat.Jpeg);
@@ -307,6 +315,30 @@ namespace ProgettoMalnati1
                         int a = sending_socket.SendTo(msA, sending_end_point);
 
                         sending_socket.Close();
+                        
+                        // if lunghezza stream > lunghezza buffer allora faccio così, altrimenti normalmente come sopra commentato
+                        /*MemoryStream ms_;
+                        using (var img = System.Drawing.Image.FromFile(image.LocalPath))
+                        {
+                            ImageFormat formato = img.RawFormat;
+                            ImageCodecInfo codec_ = ImageCodecInfo.GetImageDecoders().First(c => c.FormatID == formato.Guid);
+                            ms_ = compress(img, 65000, codec_ );
+                        }
+
+                        using (var imageToSend = System.Drawing.Image.FromStream(ms_))
+                        {
+                            //Use compressedImage
+                            MemoryStream ms = new MemoryStream();
+                            //imageToSend.Height = 300;
+                            //imageToSend.Width = 300;
+                            imageToSend.Save(ms, System.Drawing.Imaging.ImageFormat.Jpeg);
+                            var msA = ms.ToArray();
+                            System.Windows.Forms.MessageBox.Show("sendingBufLen: " + sending_socket.SendBufferSize + " - dimImg: " + msA.Length + " - dimMyStream: " + ms_.Length);
+                            int a = sending_socket.SendTo(msA, sending_end_point);
+
+                            sending_socket.Close(); 
+                        }*/
+                        //
                     }
                     else
                         System.Windows.Forms.MessageBox.Show("Modalità privata.");
@@ -317,6 +349,16 @@ namespace ProgettoMalnati1
                 System.Windows.Forms.MessageBox.Show("Errore invio da parte del server! - " + e.Message);
             }
             listener.Close(); //QUANDO DEVE CHIUDERSI IL SERVER?
+        }
+
+        private MemoryStream compress(System.Drawing.Image imageToSend, long quality, ImageCodecInfo codec)
+        {
+            EncoderParameters parameters = new EncoderParameters(1);
+            parameters.Param[0] = new EncoderParameter(System.Drawing.Imaging.Encoder.Quality, 7L);
+
+            var m = new MemoryStream();
+            imageToSend.Save(m, codec, parameters);
+            return m;
         }
 
         public static void receiveNewFile(TcpClient client, string savePath, bool conferma)
