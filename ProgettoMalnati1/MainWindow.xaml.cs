@@ -27,6 +27,13 @@ namespace ProgettoMalnati1
         string s;
         public MainWindow()
         {
+            // will become true if there is another instance running of the same application.
+            /*bool exists = Process.GetProcessesByName(System.IO.Path.GetFileNameWithoutExtension(System.Reflection.Assembly.GetEntryAssembly().Location)).Count() > 1;
+            if (exists) {
+                MessageBox.Show("Hai selezionato più di un file");
+                return;
+            }*/
+          
             InitializeComponent();
             startApp();  //commenta per eseguire la versione di test
             this.Close();
@@ -70,7 +77,7 @@ namespace ProgettoMalnati1
                         //sta lanciando l'applicazione per la prima volta, devo aprire solo il server
 
                         //MessageBox.Show("Apro il server");
-                        Process.Start(args[0], "server");
+                        Process.Start(args[0], "server"); //il processo lancia il server e si chiude
                     }
                     else
                     {
