@@ -28,6 +28,7 @@ using System.Diagnostics;
 using System.Drawing.Imaging;
 using System.ComponentModel;
 using System.Configuration;
+using System.Net.NetworkInformation;
 
 //using System.Windows.Threading;
 
@@ -396,53 +397,33 @@ namespace ProgettoMalnati1
                 while (true)
                 {
                     receive_byte_array = listener.Receive(ref groupEP);
-                    received_data = Encoding.ASCII.GetString(receive_byte_array, 0, receive_byte_array.Length);
-                    string formattedString = String.Format("Server - Received a broadcast from {0} , Received data: {1}", groupEP.ToString(), received_data);
-                    System.Windows.Forms.MessageBox.Show(formattedString);
-
-                    if (this.privato == false)
+                    string myIp = GetLocalIPAddress();
+                    if (groupEP.ToString().Split(':')[0] != myIp)
                     {
-                        System.Windows.Forms.MessageBox.Show("Modalità pubblica.");
-                        Socket sending_socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
-                        IPAddress send_to_address = groupEP.Address;
-                        IPEndPoint sending_end_point = new IPEndPoint(send_to_address, 1501);
-                        sending_socket.SendTo(Encoding.ASCII.GetBytes(nomeUtente), sending_end_point);
+                        received_data = Encoding.ASCII.GetString(receive_byte_array, 0, receive_byte_array.Length);
+                        string formattedString = String.Format("Server - Received a broadcast from {0} , Received data: {1}", groupEP.ToString(), received_data);
+                        System.Windows.Forms.MessageBox.Show(formattedString);
 
-                        var imageToSend = System.Drawing.Image.FromFile(image.LocalPath);
-                        MemoryStream ms = new MemoryStream();
-                        imageToSend.Save(ms, System.Drawing.Imaging.ImageFormat.Jpeg);
-                        var msA = ms.ToArray();
-                        System.Windows.Forms.MessageBox.Show("sendingBufLen: " + sending_socket.SendBufferSize + " - dimImg: " + msA.Length);
-                        int a = sending_socket.SendTo(msA, sending_end_point);
-
-                        sending_socket.Close();
-                        
-                        // if lunghezza stream > lunghezza buffer allora faccio così, altrimenti normalmente come sopra commentato
-                        /*MemoryStream ms_;
-                        using (var img = System.Drawing.Image.FromFile(image.LocalPath))
+                        if (this.privato == false)
                         {
-                            ImageFormat formato = img.RawFormat;
-                            ImageCodecInfo codec_ = ImageCodecInfo.GetImageDecoders().First(c => c.FormatID == formato.Guid);
-                            ms_ = compress(img, 65000, codec_ );
-                        }
+                            System.Windows.Forms.MessageBox.Show("Modalità pubblica.");
+                            Socket sending_socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+                            IPAddress send_to_address = groupEP.Address;
+                            IPEndPoint sending_end_point = new IPEndPoint(send_to_address, 1501);
+                            sending_socket.SendTo(Encoding.ASCII.GetBytes(nomeUtente), sending_end_point);
 
-                        using (var imageToSend = System.Drawing.Image.FromStream(ms_))
-                        {
-                            //Use compressedImage
+                            var imageToSend = System.Drawing.Image.FromFile(image.LocalPath);
                             MemoryStream ms = new MemoryStream();
-                            //imageToSend.Height = 300;
-                            //imageToSend.Width = 300;
                             imageToSend.Save(ms, System.Drawing.Imaging.ImageFormat.Jpeg);
                             var msA = ms.ToArray();
-                            System.Windows.Forms.MessageBox.Show("sendingBufLen: " + sending_socket.SendBufferSize + " - dimImg: " + msA.Length + " - dimMyStream: " + ms_.Length);
+                            System.Windows.Forms.MessageBox.Show("sendingBufLen: " + sending_socket.SendBufferSize + " - dimImg: " + msA.Length);
                             int a = sending_socket.SendTo(msA, sending_end_point);
 
-                            sending_socket.Close(); 
-                        }*/
-                        //
+                            sending_socket.Close();
+                        }
+                        else
+                            System.Windows.Forms.MessageBox.Show("Modalità privata.");
                     }
-                    else
-                        System.Windows.Forms.MessageBox.Show("Modalità privata.");
                 }
             }
             catch (Exception e)
@@ -450,16 +431,6 @@ namespace ProgettoMalnati1
                 System.Windows.Forms.MessageBox.Show("Errore invio da parte del server! - " + e.Message);
             }
             listener.Close(); //QUANDO DEVE CHIUDERSI IL SERVER?
-        }
-
-        private MemoryStream compress(System.Drawing.Image imageToSend, long quality, ImageCodecInfo codec)
-        {
-            EncoderParameters parameters = new EncoderParameters(1);
-            parameters.Param[0] = new EncoderParameter(System.Drawing.Imaging.Encoder.Quality, 7L);
-
-            var m = new MemoryStream();
-            imageToSend.Save(m, codec, parameters);
-            return m;
         }
 
         public static void receiveNewFile(TcpClient client, string savePath, bool conferma)
@@ -888,8 +859,30 @@ namespace ProgettoMalnati1
         {
             this.myIcon_.Visible = b;
         }
-    }
 
+        private static string GetLocalIPAddress()
+        {
+            string myIP = null;
+            foreach (NetworkInterface ni in NetworkInterface.GetAllNetworkInterfaces())
+            {
+                if (ni.NetworkInterfaceType == NetworkInterfaceType.Wireless80211 /*|| ni.NetworkInterfaceType == NetworkInterfaceType.Ethernet*/)
+                {
+                    foreach (UnicastIPAddressInformation ip in ni.GetIPProperties().UnicastAddresses)
+                    {
+                        if (ip.Address.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
+                        {
+                            myIP = ip.Address.ToString();
+                        }
+                    }
+                }
+            }
+            if (myIP != null)
+                return myIP;
+            else
+                throw new Exception("Local IP Address Not Found!");
+        }
+    }
 }
+
 
 
