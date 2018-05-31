@@ -27,6 +27,7 @@ using System.Windows.Threading;
 using System.Diagnostics;
 using System.Drawing.Imaging;
 using System.ComponentModel;
+using System.Configuration;
 
 //using System.Windows.Threading;
 
@@ -203,7 +204,7 @@ namespace ProgettoMalnati1
                     defPath = "percorso di salvataggio di default -> " + choosenPath2;
 
                 /***************/
-                Dispatcher.CurrentDispatcher.Invoke(new Action(() =>
+                /*Dispatcher.CurrentDispatcher.Invoke(new Action(() =>
                 {
                     Thread thread = new Thread(() =>
                     {
@@ -215,8 +216,30 @@ namespace ProgettoMalnati1
                     });
                     thread.SetApartmentState(ApartmentState.STA);
                     thread.Start();
-                }));
+                }));*/
 
+                Configuration config = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
+                config.AppSettings.Settings.Remove("LastDateFeesChecked");
+                config.AppSettings.Settings.Add("LastDateFeesChecked", DateTime.Now.ToShortDateString());
+                if (privato == false)
+                    config.AppSettings.Settings["pubblico"].Value = "true"; //ConfigurationManager.AppSettings["pubblico"] = "true";
+                else
+                    config.AppSettings.Settings["pubblico"].Value = "false"; //ConfigurationManager.AppSettings["pubblico"] = "false";
+                config.AppSettings.Settings["selectedPath"].Value = choosenPath2; //ConfigurationManager.AppSettings["selectedPath"] = choosenPath2;
+                config.AppSettings.Settings["image"].Value = image2.ToString(); //ConfigurationManager.AppSettings["image"] = image2.ToString();
+                config.AppSettings.Settings["nome"].Value = nomeU; //ConfigurationManager.AppSettings["nome"] = nomeU;
+                if (confRic2 == true)
+                    config.AppSettings.Settings["conferma"].Value = "true"; //ConfigurationManager.AppSettings["conferma"] = "true";
+                else
+                    config.AppSettings.Settings["conferma"].Value = "false"; //ConfigurationManager.AppSettings["conferma"] = "false";
+                config.Save(ConfigurationSaveMode.Modified);
+                ConfigurationManager.RefreshSection("appSettings");
+
+                Listener.Server.Close();
+
+
+                System.Windows.Forms.Application.Restart();
+                System.Environment.Exit(0);
                 /***************/
 
                 /* SOL1 per aprire la finestra che non si apre*/ //https://eprystupa.wordpress.com/2008/07/28/running-wpf-application-with-multiple-ui-threads/
@@ -259,19 +282,24 @@ namespace ProgettoMalnati1
                 bg.RunWorkerAsync();*/
                 /**/
 
-                var confirmResult = System.Windows.Forms.MessageBox.Show("Nome: " + nomeU + "\n\n" + "Conferma di ricezione: " + confRicezione +
-                    "\n\n" + "Default path: " + defPath + "\n\n" + "Vuoi cambiare le tue proprieta' (l'applicazione sara' riavviata) ?", "Impostazioni di condivisione", MessageBoxButtons.YesNo);
+                /***************/
+                /*var confirmResult = System.Windows.Forms.MessageBox.Show("Nome: " + nomeU + "\n\n" + "Conferma di ricezione: " + confRicezione +
+                    "\n\n" + "Default path: " + defPath + "\n\n" + "Vuoi cambiare le tue proprieta' (l'applicazione sara' riavviata) ?", "Impostazioni di condivisione", MessageBoxButtons.YesNo);*/
 
                 //se cambio stato allora modifico il valore di this.privato
-                if (confirmResult == DialogResult.Yes)
+                /*if (confirmResult == DialogResult.Yes)
                 {
                     //gestire invii e ricezioni in corso
                     //1)
                     Listener.Server.Close();
+
+
                     System.Windows.Forms.Application.Restart();
                     System.Environment.Exit(0);//System.Diagnostics.Process.GetCurrentProcess().Kill();
-                    /*****************************************/
-                }
+                    
+                }*/
+
+
                 /*
                 //SE VISIBLE DELLA PRIMA ICONA = FALSE ALLORA LO METTO A TRUE E LA SECONDA ICONA A FALSE
                 //ALTRIMENTI SE VISIBLE DELLA PRIMA ICONA = TRUE ALLORA LA METTO A FALSE E LA SECONDA LA METTO A TRUE 
