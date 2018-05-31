@@ -17,7 +17,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using System.Windows.Threading;
-using System.IO.Compression;          
+using System.IO.Compression;
+using System.Configuration;
 
 namespace ProgettoMalnati1
 {
@@ -74,7 +75,9 @@ namespace ProgettoMalnati1
                 //QUESTO DOVRA' ESSERE FATTO NEL COSTRUTTORE DEL CLIENT, PERCHE' CI SARA' GIA' LI' IL PATH
                 long length = new FileInfo(nomefile).Length;
                 c.nBytesTot = length * c.usersToShare.Count();
-
+                string[] fields = c.filename.Split('\\'); //viene inviato il path assoluto del pc che sta inviando
+                string basename = fields[fields.Length - 1];
+                textFileSending.Text = "Invio del file: " + basename;
                 this.Show();
 
                 foreach (OtherUser ou in c.usersToShare)
@@ -120,7 +123,6 @@ namespace ProgettoMalnati1
             else
             {
                 pBar.Value += e.ProgressPercentage;
-                textFileSending.Text = "Trasferimento: " + c.filename;
                 textBox.Text = "Time Left: " + e.UserState + "ms";
             }
                 
@@ -162,6 +164,11 @@ namespace ProgettoMalnati1
                     f_d = "uno*";
                 byte[] stringFlagDirectory = Encoding.ASCII.GetBytes(f_d);
                 netstream.Write(stringFlagDirectory, 0, (int)f_d.Length);
+
+                //invia nome client
+                string nomeClient = ConfigurationManager.AppSettings.Get("nome") + "*";
+                byte[] stringBytesc = Encoding.ASCII.GetBytes(nomeClient);
+                netstream.Write(stringBytesc, 0, nomeClient.Length);
 
                 //invia nome del file
                 string stringInvio = nome_file + "*";

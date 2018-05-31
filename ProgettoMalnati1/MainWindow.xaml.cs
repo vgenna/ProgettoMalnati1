@@ -29,7 +29,6 @@ namespace ProgettoMalnati1
     public partial class MainWindow : Window
     {
         string s;
-        string myname = ConfigurationManager.AppSettings.Get("nome"); // ConfigurationManager.AppSettings["nome"];
         public MainWindow()
         {
             // will become true if there is another instance running of the same application.
@@ -67,10 +66,8 @@ namespace ProgettoMalnati1
                     {
                         s = args[1];
                         //MessageBox.Show("Apro il client: "+s);
-                        ConfigurationManager.AppSettings["nome"] = "nino";
-                        System.Windows.Forms.MessageBox.Show("Nome questo client: " + ConfigurationManager.AppSettings["nome"]);
-
-
+                        //ConfigurationManager.AppSettings["nome"] = "nino";
+                        System.Windows.Forms.MessageBox.Show("Nome questo client: " + ConfigurationManager.AppSettings.Get("nome"));
                         ClientRoutine();
                     }
                     else

@@ -434,6 +434,7 @@ namespace ProgettoMalnati1
 
             string f_d = null; //riceverà "zero" o "uno"
             string st = null;
+            string nomeMittente = null;
 
 
 
@@ -469,6 +470,7 @@ namespace ProgettoMalnati1
 
 
                 byte[] RecData_3 = new byte[1];
+                byte[] RecData_4 = new byte[1];
 
                 //string f_d = null; //riceverà "zero" o "uno"
                 while ((RecBytes = netstream.Read(RecData_3, 0, 1)) > 0)
@@ -484,12 +486,22 @@ namespace ProgettoMalnati1
                     }
 
                 }
-                /*System.Windows.MessageBox.Show(f_d);
-                if (f_d.Equals("uno"))
-                    System.Windows.MessageBox.Show("Ho ricevuto una cartella.");
-                else
-                    System.Windows.MessageBox.Show("Ho ricevuto un file.");*/
 
+
+
+                while ((RecBytes = netstream.Read(RecData_4, 0, 1)) > 0)
+                {
+                    string tmp = System.Text.Encoding.UTF8.GetString(RecData_4);
+                    if (tmp.CompareTo("*") == 0)
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        nomeMittente = nomeMittente + tmp;
+                    }
+
+                }
 
 
                 while ((RecBytes = netstream.Read(RecData_2, 0, 1)) > 0)
@@ -506,9 +518,10 @@ namespace ProgettoMalnati1
                     }
                 }
 
+                
                 string[] fields = nomeFile.Split('\\'); //viene inviato il path assoluto del pc che sta inviando
                 nomeFile = fields[fields.Length - 1];
-
+                string basename = nomeFile;
                 nomeFile = savePath + "\\" + nomeFile;
                 //MessageBox.Show(nomeFile);
 
@@ -535,11 +548,12 @@ namespace ProgettoMalnati1
                     //DOPO AVER RICEVUTO IL NOMEFILE CHIEDO LA CONFERMA DI RICEZIONE
                     if (conferma == true)
                     {
-                        var confirmResult = System.Windows.Forms.MessageBox.Show("Are you sure to receive " + nomeFile + " ?",
+                        var confirmResult = System.Windows.Forms.MessageBox.Show("Do you want to receive " + basename + " from '"+ nomeMittente +"'?",
                                                             "Confirm Receive!!", MessageBoxButtons.YesNo);
                         if (confirmResult == DialogResult.Yes)
                         {
                             int totalrecbytes = 0;
+
                             Fs = new FileStream(SaveFileName, FileMode.OpenOrCreate, FileAccess.Write);
 
                             while ((RecBytes = netstream.Read(RecData, 0, RecData.Length)) > 0)
@@ -551,23 +565,7 @@ namespace ProgettoMalnati1
                             }
                             Fs.Close();
 
-                            if (SaveFileName.Split('.')[1] == "pdf")
-                            {
-                                var isValid = true;
-                                try
-                                {
-                                    PDDocument doc = PDDocument.load(SaveFileName);
-                                    isValid = true;
-                                }
-                                catch
-                                {
-                                    isValid = false;
-                                }
-                                if (isValid==false)
-                                {
-                                    System.Windows.MessageBox.Show("Il pdf è corrotto cazzoooooooo");
-                                }
-                            }
+                            
 
                             //effettuo l'eventuale decompressione
                             if (f_d.Equals("uno"))
@@ -583,7 +581,60 @@ namespace ProgettoMalnati1
                                 ZipFile.ExtractToDirectory(nomeFile, st);
                                 File.Delete(SaveFileName);
                             }
-
+                            if (SaveFileName.Split('.')[1] == "pdf")
+                            {
+                                var isValid = true;
+                                try
+                                {
+                                    PDDocument doc = PDDocument.load(SaveFileName);
+                                    isValid = true;
+                                }
+                                catch
+                                {
+                                    isValid = false;
+                                }
+                                if (isValid == false)
+                                {
+                                    var confirmReceive = System.Windows.Forms.MessageBox.Show("Il PDF che stai per ricevere potrebbe essere corrotto, vuoi accettare lo stesso?", "File corrotto", MessageBoxButtons.YesNo);
+                                    if (confirmReceive == DialogResult.No)
+                                    {
+                                        System.Windows.MessageBox.Show("Hai rifiutato la ricezione del file.");
+                                        File.Delete(SaveFileName);
+                                        return;
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                if (SaveFileName.Split('.')[1] == "jpg" || SaveFileName.Split('.')[1] == "png" || SaveFileName.Split('.')[1] == "jpeg" || SaveFileName.Split('.')[1] == "gif")
+                                {
+                                    var isValid = true;
+                                    try
+                                    {
+                                        // the using is important to avoid stressing the garbage collector
+                                        using (var test = System.Drawing.Image.FromFile(SaveFileName))
+                                        {
+                                            // image has loaded and so is fine
+                                            isValid = true;
+                                        }
+                                    }
+                                    catch
+                                    {
+                                        // technically some exceptions may not indicate a corrupt image, but this is unlikely to be an issue
+                                        isValid = false;
+                                    }
+                                    if (isValid == false)
+                                    {
+                                        var confirmReceive = System.Windows.Forms.MessageBox.Show("L'immagine che stai per ricevere potrebbe essere corrotta, vuoi accettare lo stesso?", "File corrotto", MessageBoxButtons.YesNo);
+                                        if (confirmReceive == DialogResult.No)
+                                        {
+                                            System.Windows.MessageBox.Show("Hai rifiutato la ricezione del file.");
+                                            File.Delete(SaveFileName);
+                                            return;
+                                        }
+                                    }
+                                }
+                            }
 
                             System.Windows.MessageBox.Show(string.Format("Ricevuto '{0}'", nomeFile));
                         }
