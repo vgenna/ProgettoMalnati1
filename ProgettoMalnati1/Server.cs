@@ -687,6 +687,20 @@ namespace ProgettoMalnati1
                         }
                         Fs.Close();
 
+                        //effettuo l'eventuale decompressione
+                        if (f_d.Equals("uno"))
+                        {
+                            string[] w = SaveFileName.Split('.');
+                            st = w[0];//nome del file escluso .zip
+                            while (Directory.Exists(st))//cerco una cartella con stesso nome e non il file
+                            {
+                                st = st + "-Copy";
+                            }
+                            ZipFile.ExtractToDirectory(nomeFile, st);
+                            //elimino il .zip
+                            File.Delete(SaveFileName);
+                        }
+
                         if (SaveFileName.Split('.')[1] == "pdf")
                         {
                             var isValid = true;
@@ -701,22 +715,45 @@ namespace ProgettoMalnati1
                             }
                             if (isValid == false)
                             {
-                                System.Windows.MessageBox.Show("Il pdf è corrotto cazzoooooooo");
+                                var confirmReceive = System.Windows.Forms.MessageBox.Show("Il PDF che stai per ricevere potrebbe essere corrotto, vuoi accettare lo stesso?", "File corrotto", MessageBoxButtons.YesNo);
+                                if (confirmReceive == DialogResult.No)
+                                {
+                                    System.Windows.MessageBox.Show("Hai rifiutato la ricezione del file.");
+                                    File.Delete(SaveFileName);
+                                    return;
+                                }
                             }
                         }
-
-                        //effettuo l'eventuale decompressione
-                        if (f_d.Equals("uno"))
+                        else
                         {
-                            string[] w = SaveFileName.Split('.');
-                            st = w[0];//nome del file escluso .zip
-                            while (Directory.Exists(st))//cerco una cartella con stesso nome e non il file
+                            if (SaveFileName.Split('.')[1] == "jpg" || SaveFileName.Split('.')[1] == "png" || SaveFileName.Split('.')[1] == "jpeg" || SaveFileName.Split('.')[1] == "gif")
                             {
-                                st = st + "-Copy";
+                                var isValid = true;
+                                try
+                                {
+                                    // the using is important to avoid stressing the garbage collector
+                                    using (var test = System.Drawing.Image.FromFile(SaveFileName))
+                                    {
+                                        // image has loaded and so is fine
+                                        isValid = true;
+                                    }
+                                }
+                                catch
+                                {
+                                    // technically some exceptions may not indicate a corrupt image, but this is unlikely to be an issue
+                                    isValid = false;
+                                }
+                                if (isValid == false)
+                                {
+                                    var confirmReceive = System.Windows.Forms.MessageBox.Show("L'immagine che stai per ricevere potrebbe essere corrotta, vuoi accettare lo stesso?", "File corrotto", MessageBoxButtons.YesNo);
+                                    if (confirmReceive == DialogResult.No)
+                                    {
+                                        System.Windows.MessageBox.Show("Hai rifiutato la ricezione del file.");
+                                        File.Delete(SaveFileName);
+                                        return;
+                                    }
+                                }
                             }
-                            ZipFile.ExtractToDirectory(nomeFile, st);
-                            //elimino il .zip
-                            File.Delete(SaveFileName);
                         }
 
                         System.Windows.MessageBox.Show(string.Format("Ricevuto '{0}'", nomeFile));
