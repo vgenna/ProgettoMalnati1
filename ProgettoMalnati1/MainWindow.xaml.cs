@@ -16,6 +16,10 @@ using System.Windows.Shapes;
 using System.IO;
 using System.Threading;
 using System.Diagnostics;
+using System.Net;
+using System.Windows.Forms;
+
+using System.Configuration;
 
 namespace ProgettoMalnati1
 {
@@ -25,6 +29,7 @@ namespace ProgettoMalnati1
     public partial class MainWindow : Window
     {
         string s;
+        string myname = ConfigurationManager.AppSettings.Get("nome"); // ConfigurationManager.AppSettings["nome"];
         public MainWindow()
         {
             // will become true if there is another instance running of the same application.
@@ -62,6 +67,10 @@ namespace ProgettoMalnati1
                     {
                         s = args[1];
                         //MessageBox.Show("Apro il client: "+s);
+                        ConfigurationManager.AppSettings["nome"] = "nino";
+                        System.Windows.Forms.MessageBox.Show("Nome questo client: " + ConfigurationManager.AppSettings["nome"]);
+
+
                         ClientRoutine();
                     }
                     else
@@ -98,7 +107,7 @@ namespace ProgettoMalnati1
                 }
             } catch (Exception e)
             {
-                MessageBox.Show(e.Message);
+                System.Windows.MessageBox.Show(e.Message);
             }
         }
 
@@ -130,6 +139,7 @@ namespace ProgettoMalnati1
             //oSignalEvent = new ManualResetEvent(false);
             ImpostazioniPrimoAvvio impostazioni = new ImpostazioniPrimoAvvio();
             impostazioni.Show();//mostra finestra
+            //myname = impostazioni.cname;
 
             //oSignalEvent.WaitOne(); //This thread will block here until the reset event is sent.
             //oSignalEvent.Reset();
@@ -138,6 +148,12 @@ namespace ProgettoMalnati1
 
         public void ClientRoutine()
         {
+            bool connected = checkConnection();
+            if (connected == false) {
+                System.Windows.Forms.MessageBox.Show("Connessione internet assente", "Errore connessione internet", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
             Client c = new Client(s);
             c.startBroadcastSocket();
             WinOtherUsers winOU = new WinOtherUsers(c);
@@ -172,7 +188,7 @@ namespace ProgettoMalnati1
             /******************stop****************/
             foreach (OtherUser ou in c.otherUsers.Values)
             {
-                CheckBox cb = new CheckBox();
+                System.Windows.Controls.CheckBox cb = new System.Windows.Controls.CheckBox();
                 //Style style = this.FindResource("myCheckboxStyle") as Style;
                 //cb.Style = style;
                 cb.Name = ou.Name;
@@ -200,7 +216,7 @@ namespace ProgettoMalnati1
                 p.Width = im2.Width;
                 p.Height = im2.Height + tb.Height;
                 p.Background = Brushes.LightGreen;
-                p.Orientation = Orientation.Horizontal;
+                p.Orientation = System.Windows.Controls.Orientation.Horizontal;
                 
                 tb.Inlines.Add(new Bold(new Run(ou.Name)));
                 //tb.Text = ou.Name;
@@ -213,6 +229,22 @@ namespace ProgettoMalnati1
             winOU.Show();
             this.Close();
             //fine client
+        }
+
+        private bool checkConnection()
+        {
+            try
+            {
+                using (var client = new WebClient())
+                using (client.OpenRead("http://clients3.google.com/generate_204"))
+                {
+                    return true;
+                }
+            }
+            catch
+            {
+                return false;
+            }
         }
     }
 }
