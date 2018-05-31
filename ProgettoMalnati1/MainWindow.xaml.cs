@@ -30,14 +30,7 @@ namespace ProgettoMalnati1
     {
         string s;
         public MainWindow()
-        {
-            // will become true if there is another instance running of the same application.
-            /*bool exists = Process.GetProcessesByName(System.IO.Path.GetFileNameWithoutExtension(System.Reflection.Assembly.GetEntryAssembly().Location)).Count() > 1;
-            if (exists) {
-                MessageBox.Show("Hai selezionato più di un file");
-                return;
-            }*/
-          
+        {          
             InitializeComponent();
             startApp();  //commenta per eseguire la versione di test
             this.Close();
@@ -64,6 +57,14 @@ namespace ProgettoMalnati1
                     //chiamato dalla condivisione del file (file o cartella su cui ha fatto clic dx passato come args[1])
                     if (args[2] == "client")
                     {
+                        // will become true if there is another instance running of the same application.
+                        bool exists = Process.GetProcessesByName(System.IO.Path.GetFileNameWithoutExtension(System.Reflection.Assembly.GetEntryAssembly().Location)).Count() == 1;
+                        if (exists)
+                        {
+                            System.Windows.MessageBox.Show("Avviare l'applicazione!");
+                            this.Close();
+                            return;
+                        }
                         s = args[1];
                         //MessageBox.Show("Apro il client: "+s);
                         //ConfigurationManager.AppSettings["nome"] = "nino";
