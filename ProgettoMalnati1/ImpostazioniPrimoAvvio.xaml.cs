@@ -1,6 +1,7 @@
 ﻿using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
@@ -38,10 +39,27 @@ namespace ProgettoMalnati1
             //if(inizio == false)
             //System.Windows.Application.Current.Shutdown();
             InitializeComponent();
-            pubbl.IsChecked = true;
+            /***/
+
+            /**finestra riempita con i parametri del file di configurazione**/
+            if (ConfigurationManager.AppSettings.Get("pubblico").Equals("true"))
+                pubbl.IsChecked = true;
+            else
+                priv.IsChecked = true;
             textBlock.Width = selectedPath.Length * 6;
-            textBlock.Text = selectedPath;
-            profileImage.Source = new BitmapImage(image);
+            if (ConfigurationManager.AppSettings.Get("selectedPath").Equals(""))
+                textBlock.Text = AppDomain.CurrentDomain.BaseDirectory; //textBlock.Text = selectedPath;
+            else
+                textBlock.Text = ConfigurationManager.AppSettings.Get("selectedPath");
+            Uri u = new Uri(ConfigurationManager.AppSettings.Get("image"));
+            profileImage.Source = new BitmapImage(u);//profileImage.Source = new BitmapImage(image);
+            nomeUtente.Text = ConfigurationManager.AppSettings.Get("nome");
+            if (ConfigurationManager.AppSettings.Get("conferma").Equals("true"))
+                conf.IsChecked = true;
+            else
+                conf.IsChecked = false;
+            /**/
+
             privato = false;
 
             /**senza reg file, modifico la chiave di registro prima per i file e poi per le cartelle**/
@@ -84,6 +102,8 @@ namespace ProgettoMalnati1
                 }
                 //if (inizio == true)
                 //{
+
+                
 
                 if (pubbl.IsChecked == true)
                 {
