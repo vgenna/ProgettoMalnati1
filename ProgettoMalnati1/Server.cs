@@ -191,7 +191,7 @@ namespace ProgettoMalnati1
             try
             {
                 //nome utente, conferma di ricezione, default path 
-                string confRicezione = null; 
+                string confRicezione = null;
                 string defPath = null;
 
                 if (confRic2 == true)
@@ -204,7 +204,7 @@ namespace ProgettoMalnati1
                 else
                     defPath = "percorso di salvataggio di default -> " + choosenPath2;
 
-                /***************/
+                /*******Per stampare la finestra che non viene mostrata con show****/ //https://eprystupa.wordpress.com/2008/07/28/running-wpf-application-with-multiple-ui-threads/
                 /*Dispatcher.CurrentDispatcher.Invoke(new Action(() =>
                 {
                     Thread thread = new Thread(() =>
@@ -217,7 +217,8 @@ namespace ProgettoMalnati1
                     });
                     thread.SetApartmentState(ApartmentState.STA);
                     thread.Start();
-                }));*/
+                }));
+                /****************/
 
                 Configuration config = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
                 config.AppSettings.Settings.Remove("LastDateFeesChecked");
@@ -236,117 +237,62 @@ namespace ProgettoMalnati1
                 config.Save(ConfigurationSaveMode.Modified);
                 ConfigurationManager.RefreshSection("appSettings");
 
+                /*myIcon.Visible = false;
+                myIcon.Dispose();
+                myIcon_.Visible = false;
+                myIcon_.Dispose();*/
 
-                myIcon.BalloonTipClosed += (sender, e_) => {
-                    var thisIcon = (NotifyIcon)sender;
-                    thisIcon.Visible = false;
-                    thisIcon.Dispose();
-                };
-                myIcon_.BalloonTipClosed += (sender, e_) => {
-                    var thisIcon = (NotifyIcon)sender;
-                    thisIcon.Visible = false;
-                    thisIcon.Dispose();
-                };
-                Listener.Server.Close();
-
-                System.Windows.Forms.Application.Restart();
-                System.Environment.Exit(0);
+                //Listener.Server.Close();
+                //System.Windows.Forms.Application.Restart();
+                //System.Environment.Exit(0);
                 /***************/
 
-                /* SOL1 per aprire la finestra che non si apre*/ //https://eprystupa.wordpress.com/2008/07/28/running-wpf-application-with-multiple-ui-threads/
-                /*Thread thread = new Thread(() =>
-                {
-                    ///System.Windows.Forms.MessageBox.Show("Window1");
-                    //w.Closed += (sender2, e2) =>
-                    //w.Dispatcher.InvokeShutdown();
-                    /*System.Windows.Forms.GroupBox gb = new System.Windows.Forms.GroupBox();
-                    PictureBox imageControl = new PictureBox(); imageControl.SizeMode = PictureBoxSizeMode.StretchImage;
-                    imageControl.Width = 400;
-                    imageControl.Height = 400;
-
-                    Uri u = new Uri("C:\\Users\\Saverio\\Desktop\\download2.jpg");
-                    Bitmap image = new Bitmap(u.LocalPath.ToString());
-                    imageControl.Dock = DockStyle.Fill;
-                    imageControl.Image = image;
-
-                    gb.Visible = true;
-                    gb.Controls.Add(imageControl);
-                    System.Windows.Forms.MessageBox.Show("Picture");
-                    gb.Show();
-                    System.Windows.Forms.Application.Run();
-                    //Dispatcher.Run();
-
-                });
-                
-                thread.SetApartmentState(ApartmentState.STA);
-                thread.Start();*/
-
-                /**/
-                /*BackgroundWorker bg = new BackgroundWorker();
-                Dispatcher disp = Dispatcher.CurrentDispatcher;
-                bg.DoWork += (sender, e_) =>
-                {
-                    // load your data
-                    disp.Invoke(new Action(() => displayProfileImage()));
-                };
-                //bg.RunWorkerCompleted += anotherMethodOrLambda; // optional
-                bg.RunWorkerAsync();*/
-                /**/
 
                 /***************/
-                /*var confirmResult = System.Windows.Forms.MessageBox.Show("Nome: " + nomeU + "\n\n" + "Conferma di ricezione: " + confRicezione +
-                    "\n\n" + "Default path: " + defPath + "\n\n" + "Vuoi cambiare le tue proprieta' (l'applicazione sara' riavviata) ?", "Impostazioni di condivisione", MessageBoxButtons.YesNo);*/
+                var confirmResult = System.Windows.Forms.MessageBox.Show("Nome: " + nomeU + "\n\n" + "Conferma di ricezione: " + confRicezione +
+                    "\n\n" + "Default path: " + defPath + "\n\n" + "Uri immagine: " + image2 + "Vuoi cambiare la tua visibilita' in rete ?", "Impostazioni di condivisione", MessageBoxButtons.YesNo);
 
                 //se cambio stato allora modifico il valore di this.privato
-                /*if (confirmResult == DialogResult.Yes)
+                if (confirmResult == DialogResult.Yes)
                 {
-                    //gestire invii e ricezioni in corso
-                    //1)
-                    Listener.Server.Close();
+                    //SE VISIBLE DELLA PRIMA ICONA = FALSE ALLORA LO METTO A TRUE E LA SECONDA ICONA A FALSE
+                    //ALTRIMENTI SE VISIBLE DELLA PRIMA ICONA = TRUE ALLORA LA METTO A FALSE E LA SECONDA LA METTO A TRUE 
 
-
-                    System.Windows.Forms.Application.Restart();
-                    System.Environment.Exit(0);//System.Diagnostics.Process.GetCurrentProcess().Kill();
-                    
-                }*/
-
-
-                /*
-                //SE VISIBLE DELLA PRIMA ICONA = FALSE ALLORA LO METTO A TRUE E LA SECONDA ICONA A FALSE
-                //ALTRIMENTI SE VISIBLE DELLA PRIMA ICONA = TRUE ALLORA LA METTO A FALSE E LA SECONDA LA METTO A TRUE 
-
-                //cambio della variabile "privato"
-                if (privato == false)
-                {
-                    this.privato = true;
-                    if (myIcon.Visible == true)
+                    //cambio della variabile "privato"
+                    if (privato == false)
                     {
-                        myIcon.Visible = false;
-                        myIcon_.Visible = true;
-                    }
-                    else if (myIcon_.Visible == true)
-                    {
-                        myIcon_.Visible = false;
-                        myIcon.Visible = true;
-                    }
+                        this.privato = true;
+                        if (myIcon.Visible == true)
+                        {
+                            myIcon.Visible = false;
+                            myIcon_.Visible = true;
+                        }
+                        else if (myIcon_.Visible == true)
+                        {
+                            myIcon_.Visible = false;
+                            myIcon.Visible = true;
+                        }
 
+                    }
+                    else
+                    {
+                        this.privato = false; ;
+                        if (myIcon.Visible == true)
+                        {
+                            myIcon.Visible = false;
+                            myIcon_.Visible = true;
+                        }
+                        else if (myIcon_.Visible == true)
+                        {
+                            myIcon_.Visible = false;
+                            myIcon.Visible = true;
+                        }
+                    }
+                    if (privato == false)
+                        config.AppSettings.Settings["pubblico"].Value = "true"; //ConfigurationManager.AppSettings["pubblico"] = "true";
+                    else
+                        config.AppSettings.Settings["pubblico"].Value = "false"; //ConfigurationManager.AppSettings["pubblico"] = "false";
                 }
-                else
-                {
-                    this.privato = false;;
-                    if (myIcon.Visible == true)
-                    {
-                        myIcon.Visible = false;
-                        myIcon_.Visible = true;
-                    }
-                    else if (myIcon_.Visible == true)
-                    {
-                        myIcon_.Visible = false;
-                        myIcon.Visible = true;
-                    }
-                }*/
-                //}
-
 
             }
             catch (Exception ex)
