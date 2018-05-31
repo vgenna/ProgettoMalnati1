@@ -27,12 +27,11 @@ namespace ProgettoMalnati1
     /// </summary>
     public partial class ImpostazioniPrimoAvvio : Window
     {
-        Server s; //vedi riga 107
-        bool privato;
-        string selectedPath = AppDomain.CurrentDomain.BaseDirectory; //default
-        Uri image = new Uri("pack://application:,,,/Resource/ProfileImages/download.jpg");
-        bool inizio = true;
-
+        bool privato = !ConfigurationManager.AppSettings.Get("pubblico").Equals("true");
+        string selectedPath = ConfigurationManager.AppSettings.Get("selectedPath");
+        string nome = ConfigurationManager.AppSettings.Get("nome");
+        bool conferma = ConfigurationManager.AppSettings.Get("conferma").Equals("true");
+        Uri image = new Uri(ConfigurationManager.AppSettings.Get("image"));
 
         public ImpostazioniPrimoAvvio()
         {
@@ -42,19 +41,24 @@ namespace ProgettoMalnati1
             /***/
 
             /**finestra riempita con i parametri del file di configurazione**/
-            if (ConfigurationManager.AppSettings.Get("pubblico").Equals("true"))
+            if (privato==false)
                 pubbl.IsChecked = true;
             else
                 priv.IsChecked = true;
+
             textBlock.Width = selectedPath.Length * 6;
-            if (ConfigurationManager.AppSettings.Get("selectedPath").Equals(""))
+
+            if (selectedPath.Equals(""))
                 textBlock.Text = AppDomain.CurrentDomain.BaseDirectory; //textBlock.Text = selectedPath;
             else
                 textBlock.Text = ConfigurationManager.AppSettings.Get("selectedPath");
-            Uri u = new Uri(ConfigurationManager.AppSettings.Get("image"));
-            profileImage.Source = new BitmapImage(u);//profileImage.Source = new BitmapImage(image);
-            nomeUtente.Text = ConfigurationManager.AppSettings.Get("nome");
-            if (ConfigurationManager.AppSettings.Get("conferma").Equals("true"))
+
+       
+            profileImage.Source = new BitmapImage(image);//profileImage.Source = new BitmapImage(image);
+
+            nomeUtente.Text = nome;
+
+            if (conferma == true)
                 conf.IsChecked = true;
             else
                 conf.IsChecked = false;
@@ -161,7 +165,7 @@ namespace ProgettoMalnati1
                 ConfigurationManager.RefreshSection("appSettings");
 
                 /*Server*/
-                s = new Server(privato, selectedPath, nome, conferma, image);
+                new Server(privato, selectedPath, nome, conferma, image);
 
                 //s.oSignalEvent.Set();
 
