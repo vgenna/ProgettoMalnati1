@@ -142,6 +142,23 @@ namespace ProgettoMalnati1
 
                 this.Close();
 
+                /*****************/
+                Configuration config = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
+                config.AppSettings.Settings.Remove("LastDateFeesChecked");
+                config.AppSettings.Settings.Add("LastDateFeesChecked", DateTime.Now.ToShortDateString());
+                if (privato == false)
+                    config.AppSettings.Settings["pubblico"].Value = "true"; //ConfigurationManager.AppSettings["pubblico"] = "true";
+                else
+                    config.AppSettings.Settings["pubblico"].Value = "false"; //ConfigurationManager.AppSettings["pubblico"] = "false";
+                config.AppSettings.Settings["selectedPath"].Value = selectedPath; //ConfigurationManager.AppSettings["selectedPath"] = choosenPath2;
+                config.AppSettings.Settings["image"].Value = image.ToString(); //ConfigurationManager.AppSettings["image"] = image2.ToString();
+                config.AppSettings.Settings["nome"].Value = nome; //ConfigurationManager.AppSettings["nome"] = nomeU;
+                if (conferma == true)
+                    config.AppSettings.Settings["conferma"].Value = "true"; //ConfigurationManager.AppSettings["conferma"] = "true";
+                else
+                    config.AppSettings.Settings["conferma"].Value = "false"; //ConfigurationManager.AppSettings["conferma"] = "false";
+                config.Save(ConfigurationSaveMode.Modified);
+                ConfigurationManager.RefreshSection("appSettings");
 
                 /*Server*/
                 s = new Server(privato, selectedPath, nome, conferma, image);

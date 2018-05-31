@@ -235,8 +235,18 @@ namespace ProgettoMalnati1
                 config.Save(ConfigurationSaveMode.Modified);
                 ConfigurationManager.RefreshSection("appSettings");
 
-                Listener.Server.Close();
 
+                myIcon.BalloonTipClosed += (sender, e_) => {
+                    var thisIcon = (NotifyIcon)sender;
+                    thisIcon.Visible = false;
+                    thisIcon.Dispose();
+                };
+                myIcon_.BalloonTipClosed += (sender, e_) => {
+                    var thisIcon = (NotifyIcon)sender;
+                    thisIcon.Visible = false;
+                    thisIcon.Dispose();
+                };
+                Listener.Server.Close();
 
                 System.Windows.Forms.Application.Restart();
                 System.Environment.Exit(0);
