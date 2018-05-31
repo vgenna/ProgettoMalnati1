@@ -120,6 +120,7 @@ namespace ProgettoMalnati1
             else
             {
                 pBar.Value += e.ProgressPercentage;
+                textFileSending.Text = "Trasferimento: " + c.filename;
                 textBox.Text = "Time Left: " + e.UserState + "ms";
             }
                 

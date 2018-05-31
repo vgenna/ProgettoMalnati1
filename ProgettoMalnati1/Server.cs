@@ -26,6 +26,7 @@ using System.Windows.Media;
 using System.Windows.Threading;
 using System.Diagnostics;
 using System.Drawing.Imaging;
+using System.ComponentModel;
 
 //using System.Windows.Threading;
 
@@ -53,7 +54,7 @@ namespace ProgettoMalnati1
         System.Windows.Forms.MenuItem myMenuItem2_;
 
         TcpListener Listener = null; //ti sia lieve la terra, https://stackoverflow.com/questions/365370/proper-way-to-stop-tcplistener
-       
+        
 
         public Server(bool privato, string savePath, string nomeUtente, bool conferma, Uri image)
         {
@@ -64,13 +65,13 @@ namespace ProgettoMalnati1
             this.image = image;
 
             bool defaultPath = false;
-             
+
             /*******CREAZIONE ICONA NELLA TASKBAR******/
             //nel server per gestire la variabile bool "privato"
             notifyThread = new Thread(
                delegate ()
                {
-
+                   
                    myMenu = new System.Windows.Forms.ContextMenu();
                    myMenuItem = new System.Windows.Forms.MenuItem("Impostazioni di condivisione");
                    myMenu.MenuItems.Add(0, myMenuItem);
@@ -187,8 +188,8 @@ namespace ProgettoMalnati1
             //finestra con le impostazioni attuali e possibilità di cambiare lo stato
             try
             {
-                //nome utente, conferma di ricezione, default path
-                string confRicezione = null;
+                //nome utente, conferma di ricezione, default path 
+                string confRicezione = null; 
                 string defPath = null;
 
                 if (confRic2 == true)
@@ -202,26 +203,61 @@ namespace ProgettoMalnati1
                     defPath = "percorso di salvataggio di default -> " + choosenPath2;
 
                 /***************/
-                
+                Dispatcher.CurrentDispatcher.Invoke(new Action(() =>
+                {
+                    Thread thread = new Thread(() =>
+                    {
+                        System.Windows.Forms.MessageBox.Show("Window1");
+                        Window1 w1 = new Window1();
+                        w1.Visibility = Visibility.Visible;
+                        w1.Show();
+                        System.Windows.Threading.Dispatcher.Run(); 
+                    });
+                    thread.SetApartmentState(ApartmentState.STA);
+                    thread.Start();
+                }));
 
                 /***************/
 
                 /* SOL1 per aprire la finestra che non si apre*/ //https://eprystupa.wordpress.com/2008/07/28/running-wpf-application-with-multiple-ui-threads/
-                Thread thread = new Thread(() =>
+                /*Thread thread = new Thread(() =>
                 {
-                    var w1 = new Window1();
-                    w1.Activate();
-                    w1.Visibility = Visibility.Visible;
-                    w1.Show();
-                    System.Windows.Forms.MessageBox.Show("Window1");
+                    ///System.Windows.Forms.MessageBox.Show("Window1");
                     //w.Closed += (sender2, e2) =>
                     //w.Dispatcher.InvokeShutdown();
-                    //System.Windows.Forms.Application.Run();
-                    Dispatcher.Run();
-                    
+                    /*System.Windows.Forms.GroupBox gb = new System.Windows.Forms.GroupBox();
+                    PictureBox imageControl = new PictureBox(); imageControl.SizeMode = PictureBoxSizeMode.StretchImage;
+                    imageControl.Width = 400;
+                    imageControl.Height = 400;
+
+                    Uri u = new Uri("C:\\Users\\Saverio\\Desktop\\download2.jpg");
+                    Bitmap image = new Bitmap(u.LocalPath.ToString());
+                    imageControl.Dock = DockStyle.Fill;
+                    imageControl.Image = image;
+
+                    gb.Visible = true;
+                    gb.Controls.Add(imageControl);
+                    System.Windows.Forms.MessageBox.Show("Picture");
+                    gb.Show();
+                    System.Windows.Forms.Application.Run();
+                    //Dispatcher.Run();
+
                 });
+                
                 thread.SetApartmentState(ApartmentState.STA);
-                thread.Start();
+                thread.Start();*/
+
+                /**/
+                /*BackgroundWorker bg = new BackgroundWorker();
+                Dispatcher disp = Dispatcher.CurrentDispatcher;
+                bg.DoWork += (sender, e_) =>
+                {
+                    // load your data
+                    disp.Invoke(new Action(() => displayProfileImage()));
+                };
+                //bg.RunWorkerCompleted += anotherMethodOrLambda; // optional
+                bg.RunWorkerAsync();*/
+                /**/
 
                 var confirmResult = System.Windows.Forms.MessageBox.Show("Nome: " + nomeU + "\n\n" + "Conferma di ricezione: " + confRicezione +
                     "\n\n" + "Default path: " + defPath + "\n\n" + "Vuoi cambiare le tue proprieta' (l'applicazione sara' riavviata) ?", "Impostazioni di condivisione", MessageBoxButtons.YesNo);
@@ -279,6 +315,31 @@ namespace ProgettoMalnati1
                 System.Windows.MessageBox.Show(ex.Message + "\n problema thread");
             }
 
+        }
+
+        private void displayProfileImage() 
+        {
+            try
+            {
+                System.Windows.Forms.GroupBox gb = new System.Windows.Forms.GroupBox();
+                PictureBox imageControl = new PictureBox(); imageControl.SizeMode = PictureBoxSizeMode.StretchImage;
+                imageControl.Width = 400;
+                imageControl.Height = 400;
+
+                Uri u = new Uri("C:\\Users\\Saverio\\Desktop\\download2.jpg");
+                Bitmap image = new Bitmap(/*this.image.LocalPath.ToString()*/   u.LocalPath.ToString());
+                imageControl.Dock = DockStyle.Fill;
+                imageControl.Image = image;
+
+                gb.Visible = true;
+                gb.Controls.Add(imageControl);
+                System.Windows.Forms.MessageBox.Show("Picture");
+                gb.Show();
+            }
+            catch(Exception e)
+            {
+                System.Windows.Forms.MessageBox.Show("Problema immagine.");
+            }
         }
 
 
