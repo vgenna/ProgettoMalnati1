@@ -608,6 +608,24 @@ namespace ProgettoMalnati1
                         }
                         Fs.Close();
 
+                        if (SaveFileName.Split('.')[1] == "pdf")
+                        {
+                            var isValid = true;
+                            try
+                            {
+                                PDDocument doc = PDDocument.load(SaveFileName);
+                                isValid = true;
+                            }
+                            catch
+                            {
+                                isValid = false;
+                            }
+                            if (isValid == false)
+                            {
+                                System.Windows.MessageBox.Show("Il pdf è corrotto cazzoooooooo");
+                            }
+                        }
+
                         //effettuo l'eventuale decompressione
                         if (f_d.Equals("uno"))
                         {
