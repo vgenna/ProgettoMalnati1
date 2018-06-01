@@ -240,17 +240,17 @@ namespace ProgettoMalnati1
                 /*myIcon.Visible = false;
                 myIcon.Dispose();
                 myIcon_.Visible = false;
-                myIcon_.Dispose();*/
-
-                //Listener.Server.Close();
-                //System.Windows.Forms.Application.Restart();
+                myIcon_.Dispose();
+                notifyThread_.Abort();
+                Listener.Server.Close();
+                System.Windows.Forms.Application.Restart();*/
                 //System.Environment.Exit(0);
                 /***************/
 
 
                 /***************/
                 var confirmResult = System.Windows.Forms.MessageBox.Show("Nome: " + nomeU + "\n\n" + "Conferma di ricezione: " + confRicezione +
-                    "\n\n" + "Default path: " + defPath + "\n\n" + "Uri immagine: " + image2 + "Vuoi cambiare la tua visibilita' in rete ?", "Impostazioni di condivisione", MessageBoxButtons.YesNo);
+                    "\n\n" + "Default path: " + defPath + "\n\n" + "Uri immagine: " + image2 + "\n\n" + "Vuoi cambiare la tua visibilita' in rete ?", "Impostazioni di condivisione", MessageBoxButtons.YesNo);
 
                 //se cambio stato allora modifico il valore di this.privato
                 if (confirmResult == DialogResult.Yes)
@@ -412,6 +412,7 @@ namespace ProgettoMalnati1
 
 
                 netstream = client.GetStream();//passare il client
+                netstream.ReadTimeout = 1000;
                 Status = "Connected to a client\n";
                 //result = System.Windows.MessageBox.Show(message, caption, buttons);
 
@@ -711,7 +712,8 @@ namespace ProgettoMalnati1
                 {
                     if (errore == true)
                     {
-                        Fs.Close();
+                        if(Fs != null)
+                            Fs.Close();
                         if (File.Exists(nomeFile))
                             File.Delete(nomeFile);//se il nomeFile esiste (un file qualsiasi, può essere anche lo zip)
                         //se ho ricevuto una cartella f_d == 1 elimino anche la cartella creata ---> Directory.Delete(nome della cartella creata in st) se esiste
