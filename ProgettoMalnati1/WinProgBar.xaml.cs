@@ -144,6 +144,8 @@ namespace ProgettoMalnati1
                 netstream = client.GetStream();
                 //int BufferSize = 1024*1024;/**dimensione del pacchetto inviato**/
                 int BufferSize = (int) new FileInfo(nome_file).Length/50; //problema per invii >400GB(int non contiene un numero >4miliardi)
+                if (BufferSize > 2000000)
+                    BufferSize = 1000000;
                 if (BufferSize < 100)
                     BufferSize = 100;
 

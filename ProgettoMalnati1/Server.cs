@@ -348,11 +348,11 @@ namespace ProgettoMalnati1
                     {
                         received_data = Encoding.ASCII.GetString(receive_byte_array, 0, receive_byte_array.Length);
                         string formattedString = String.Format("Server - Received a broadcast from {0} , Received data: {1}", groupEP.ToString(), received_data);
-                        System.Windows.Forms.MessageBox.Show(formattedString);
+                        //System.Windows.Forms.MessageBox.Show(formattedString);
 
                         if (this.privato == false)
                         {
-                            System.Windows.Forms.MessageBox.Show("Modalità pubblica.");
+                            //System.Windows.Forms.MessageBox.Show("Modalità pubblica.");
                             Socket sending_socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
                             IPAddress send_to_address = groupEP.Address;
                             IPEndPoint sending_end_point = new IPEndPoint(send_to_address, 1501);
@@ -362,13 +362,13 @@ namespace ProgettoMalnati1
                             MemoryStream ms = new MemoryStream();
                             imageToSend.Save(ms, System.Drawing.Imaging.ImageFormat.Jpeg);
                             var msA = ms.ToArray();
-                            System.Windows.Forms.MessageBox.Show("sendingBufLen: " + sending_socket.SendBufferSize + " - dimImg: " + msA.Length);
+                            //System.Windows.Forms.MessageBox.Show("sendingBufLen: " + sending_socket.SendBufferSize + " - dimImg: " + msA.Length);
                             int a = sending_socket.SendTo(msA, sending_end_point);
 
                             sending_socket.Close();
                         }
-                        else
-                            System.Windows.Forms.MessageBox.Show("Modalità privata.");
+                        //else
+                            //System.Windows.Forms.MessageBox.Show("Modalità privata.");
                     }
                 }
             }

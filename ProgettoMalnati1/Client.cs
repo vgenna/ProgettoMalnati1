@@ -49,7 +49,7 @@ namespace ProgettoMalnati1
             String nome = null;
             try
             {
-                MessageBox.Show("Trying to send");
+                //MessageBox.Show("Trying to send");
                 string broadcastAddress = getBroadcastAdd(myIP);
                 //MessageBox.Show(broadcastAddress);
                 IPEndPoint sending_end_point = new IPEndPoint(IPAddress.Parse(broadcastAddress), 1500); 
@@ -59,7 +59,7 @@ namespace ProgettoMalnati1
                 //for(int i=0;i<5;i++)
                  client.Send(requestData, requestData.Length, sending_end_point); //VEDERE SE IL PROBLEMA ERA SOLO IL PC DI SAVERIO E NE BASTA 1
 
-                MessageBox.Show("Client - Sent!");
+                //MessageBox.Show("Client - Sent!");
 
                 while (!timeout)
                 { //esce da questo ciclo solo in caso di timeout o di eccezione
